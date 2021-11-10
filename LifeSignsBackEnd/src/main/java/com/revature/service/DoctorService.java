@@ -28,13 +28,13 @@ public class DoctorService {
 		doctorRepo.save(doctor);
 	}
 	
-	public Doctor getDoctorByID(int id) {
-		return doctorRepo.findByUserId(id);
-	}
-	
-	public Doctor getDoctorByUsername(String username) {
-		return doctorRepo.findByUserName(username);
-	}
+//	public Doctor getDoctorByID(int id) {
+//		return doctorRepo.findByUserId(id);
+//	}
+//	
+//	public Doctor getDoctorByUsername(String username) {
+//		return doctorRepo.findByUserName(username);
+//	}
 	
 	
 	public String deleteDoctor(Doctor doctor) {
