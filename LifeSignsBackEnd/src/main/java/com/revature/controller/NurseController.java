@@ -1,7 +1,5 @@
 package com.revature.controller;
 
-import java.time.LocalDate;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +23,11 @@ public class NurseController {
 	@GetMapping("/id/{id}")
 	public ResponseEntity<Object> getNurseByUserId(@PathVariable("id") int user_id) {
 		return new ResponseEntity<>("getNurseByUserId works! user_id = " + user_id, HttpStatus.OK);
+	}
+	
+	@GetMapping("username/{username}")
+	public ResponseEntity<Object> getNurseByUsername(@PathVariable("username") String username) {
+		return new ResponseEntity<>("getNurseByUsername works! username = " + username, HttpStatus.OK);
 	}
 	
 	@PostMapping("/update")
