@@ -1,80 +1,63 @@
 package com.example.controller;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.LinkedHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ReadMe.Main;
 import com.example.model.User;
+import com.example.service.BcryptPasswordEncoder;
 import com.example.service.UserService;
 
-import lombok.NoArgsConstructor;
 
 @RestController
-@RequestMapping(value="/LifeSigns")
-@CrossOrigin(origins="*")
-@NoArgsConstructor
+@RequestMapping(value = "/LifeSigns")
+@CrossOrigin(origins = "*")
 public class UserController {
-	private UserService uServ;
-	
-	@Autowired
-	public UserController(UserService uServ) {
-		super();
-		this.uServ = uServ;
-	}
-//GET: localhost:****/LifeSigns/Users	
-@GetMapping("/Users")
-public ResponseEntity<List<User>> getAllUsers() {
-		return new ResponseEntity<List<User>>(uServ.getAllUsers(), HttpStatus.OK);
-	}
+    private UserService uServ;
+    private PasswordEncoder passwordEncoder;
 
-//GET: localhost:***/LifeSigns/users/{username}
-	@GetMapping("/users/{username}")
-	public ResponseEntity<User> getUserByUsername(@PathVariable("username") String username){
-		User user = uServ.getUserByUsername(username);
-		if(user==null) {
-	
-			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(user, HttpStatus.OK);
-	}
-	
-//DELETE: localhost:****/LifeSigns/users/{username}
-		@DeleteMapping("/users/{username}")
-		public ResponseEntity<String> deleteUser(@PathVariable("username") String username){
-			User user = uServ.getUserByUsername(username);
-			if(user==null) {
-				//Main.log.warn("Failed to delete user with username " + username + ": No user of that name was found");
-				return new ResponseEntity<String>("No user of that name was found", HttpStatus.NOT_FOUND);
-			}
-			
-			uServ.deleteUser(user);
-			//Main.log.info("Deleted user with username " + username + " from database");
-			return new ResponseEntity<String>("User was deleted", HttpStatus.OK);
+    @Autowired
+    public UserController(UserService uServ, BcryptPasswordEncoder BCryptHasher) {
+        super();
+        this.uServ = uServ;
+        this.passwordEncoder = BCryptHasher.getPasswordEncoder();
+    }
 
-		}
-//POST: localhost:***/LifeSigns/login
-//Include user in JSON format in the request body
-		@PostMapping("/login")
-		public ResponseEntity<Object> validateUser(@RequestBody User user){
-			User userList = user.getUsername();
-			if() {return new ResponseEntity<>(uServ.getUserByUsername(user.getUsername()), HttpStatus.ACCEPTED);
-				}	
-			return new ResponseEntity<>("Invalid login", HttpStatus.FORBIDDEN);
-		}
-//POST: localhost:***/LifeSigns/register
-//Include user in JSON format in the request body			
-	
+    //POST: localhost:***/LifeSigns/login
+    //Include user in JSON format in the request body
+    @PostMapping("/login")
+    public ResponseEntity < Object > validateUser(@RequestBody LinkedHashMap < String, String > userMap) {
+        // Right now, the user should contain the unhashed password stored in the user object.
+        // Then the database should have the BCrypt hashed version of the password and we'll check those.
+        User returnedUser = uServ.getUserByUsername(userMap.get("username"));
+        if (returnedUser == null) {
+            return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+        }
+        if (passwordEncoder.matches(userMap.get("password"), returnedUser.getPassword())) {
+            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.ACCEPTED);
+        }
+        return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+    }
+
+    //POST: localhost:***/LifeSigns/register
+    //Include user in JSON format in the request body	
+    @PostMapping(value = "/register")
+    public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
+        User returnedUser = uServ.getUserByUsername(userMap.get("username"));
+        if (returnedUser != null)
+            return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
+        //using the constructor User(int roleID, String username, String password, String email)
+        User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"),
+            passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+        uServ.insertUser(newUser);
+        return new ResponseEntity < > (newUser, HttpStatus.ACCEPTED);
+    }
 }
-

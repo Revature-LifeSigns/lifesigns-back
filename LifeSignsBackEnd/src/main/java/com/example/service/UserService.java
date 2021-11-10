@@ -3,19 +3,28 @@ package com.example.service;
 import java.util.List;
 import java.util.Optional;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.model.User;
 import com.example.repository.UserRepository;
 
-import lombok.NoArgsConstructor;
-
-
-
-@Service
-@NoArgsConstructor 
+@Service("userService")
+@Transactional
 public class UserService {
 	private UserRepository uRepo;
+	
+	public UserService() {
+		
+	}
+	
+	@Autowired
+	public UserService(UserRepository uRepo) {
+		super();
+		this.uRepo = uRepo;
+	}
 	
 	public List<User> getAllUsers(){
 		return uRepo.findAll();
@@ -26,10 +35,7 @@ public class UserService {
 	public void deleteUser(User user) {
 		uRepo.delete(user);
 	}
-	//public Optional getUserById(int id){
-	//	return uRepo.findById(id);}
 	
-    
 	public User getUserByUsername(String username){
 		return uRepo.findByUsername(username);
 	}

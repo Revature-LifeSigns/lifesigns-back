@@ -5,13 +5,15 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.model.User;
 
-@Repository
+@Transactional
+@Repository("userRepo")
 public interface UserRepository extends JpaRepository<User, String>  {
 	public List<User> findAll();
-	public Optional<User> findById(int id);
+	public User findByUserid(int Userid);
 	public User findByUsername(String username);
 	public User findByPassword(String password);
 	//public User findByUsernameAndPassword(String userame, String password);
