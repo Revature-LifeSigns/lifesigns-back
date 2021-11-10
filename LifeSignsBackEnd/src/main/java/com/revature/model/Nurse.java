@@ -1,4 +1,4 @@
-package com.example.model;
+package com.revature.model;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -207,26 +207,5 @@ public class Nurse {
 				+ ", aboutMe=" + aboutMe + ", viewPreference=" + viewPreference + ", covid_status=" + covid_status
 				+ "]";
 	}
-	
-	
-	
-	
-
-
-
-	
-	
-	
-	
-
-
-	
-	
-	
-	
-	
-	
-	
-	
 
 }
