@@ -1,4 +1,4 @@
-package com.example.model;
+package com.revature.model;
 
 import java.time.LocalDate;
 import java.util.Arrays;
