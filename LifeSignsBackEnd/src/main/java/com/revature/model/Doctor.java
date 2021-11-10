@@ -75,7 +75,7 @@ public class Doctor {
 	public Doctor(int userId, String firstname, String lastname, Date dOB, String address, SerialBlob picture,
 			String aboutMe, boolean darkMode, CovidStatus covidStatus, Object user) {
 		super();
-		this.userId = userId;
+		//this.userId = userId;
 		Firstname = firstname;
 		Lastname = lastname;
 		DOB = dOB;
@@ -93,20 +93,20 @@ public class Doctor {
 	//constructor with id, first name, last name, DOB, and user object
 	public Doctor(int userId, String firstname, String lastname, Date dOB, Object user) {
 		super();
-		this.userId = userId;
+		//this.userId = userId;
 		Firstname = firstname;
 		Lastname = lastname;
 		DOB = dOB;
 		this.user = user;
 	}
 
-	public int getUserId() {
-		return userId;
-	}
-
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
+//	public int getUserId() {
+//		return userId;
+//	}
+//
+//	public void setUserId(int userId) {
+//		this.userId = userId;
+//	}
 
 	public String getFirstname() {
 		return Firstname;
@@ -197,8 +197,8 @@ public class Doctor {
 	//ToString with all variables
 	@Override
 	public String toString() {
-		return "Doctor [userId=" + userId + ", Firstname=" + Firstname + ", Lastname=" + Lastname + ", DOB=" + DOB
-				+ ", address=" + address + ", picture=" + picture + ", aboutMe=" + aboutMe +
+		return "Doctor [Firstname=" + Firstname + ", Lastname=" + Lastname + ", DOB=" + DOB
+				+ ", address=" + address + ", picture=" + picture + ", aboutMe=" + aboutMe
 				+ ", darkMode=" + darkMode + ", covidStatus=" + covidStatus + ", user=" + user + "]";
 	}
 	
