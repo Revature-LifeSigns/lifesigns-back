@@ -1,5 +1,7 @@
 package com.revature.controller;
 
+import java.time.LocalDate;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.revature.model.Nurse;
 
 import lombok.NoArgsConstructor;
 
@@ -23,10 +27,9 @@ public class NurseController {
 		return new ResponseEntity<>("getNurseByUserId works! user_id = " + user_id, HttpStatus.OK);
 	}
 	
-	//todo: add request body
 	@PostMapping("/update")
-	public ResponseEntity<Object> updateNurseProfile() {
-		return new ResponseEntity<>("updateNurseProfile works!", HttpStatus.OK);
+	public ResponseEntity<Object> updateNurseProfile(@RequestBody Nurse nurse) {
+		return new ResponseEntity<>("updateNurseProfile works! Nurse username = " + nurse.getUserName(), HttpStatus.OK);
 	}
 	
 	//todo: add request body
