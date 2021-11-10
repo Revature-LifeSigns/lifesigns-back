@@ -9,89 +9,96 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table
+@Table(name = "users")
 public class User {
-	
-@Id
-@Column(name="user_id")
-@GeneratedValue(strategy=GenerationType.IDENTITY)
-private int userID;
 
-@Column(name="role_id")
-private int roleID;
+    @Id
+    @Column(name = "userid")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userid;
 
-@Column(name="username")
-private String username;
+    @Column(name = "roleid")
+    private int roleid;
 
-@Column(name="pwd")
-private String password;
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
 
-@Column(name="email")
-private String email;
+    @Column(name = "pwd", nullable = false)
+    private String password;
 
-public User() {
-	
-}
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
 
-public User(int userID, int roleID, String username, String password, String email) {
-	super();
-	this.userID = userID;
-	this.roleID = roleID;
-	this.username = username;
-	this.password = password;
-	this.email = email;
-}
+    public User() {
 
-public User(String username, String password) {
-	super();
-	this.username = username;
-	this.password = password;
-}
+    }
 
-public int getUserID() {
-	return userID;
-}
+    public User(int userid, int roleid, String username, String password, String email) {
+        super();
+        this.userid = userid;
+        this.roleid = roleid;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
-public void setUserID(int userID) {
-	this.userID = userID;
-}
+    public User(int roleid, String username, String password, String email) {
+        super();
+        this.roleid = roleid;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 
-public int getRoleID() {
-	return roleID;
-}
+    public User(String username, String password) {
+        super();
+        this.username = username;
+        this.password = password;
+    }
 
-public void setRoleID(int roleID) {
-	this.roleID = roleID;
-}
+    public int getUserid() {
+        return userid;
+    }
 
-public String getUsername() {
-	return username;
-}
+    public void setUserid(int userid) {
+        this.userid = userid;
+    }
 
-public void setUsername(String username) {
-	this.username = username;
-}
+    public int getRoleid() {
+        return roleid;
+    }
 
-public String getPassword() {
-	return password;
-}
+    public void setRoleid(int roleid) {
+        this.roleid = roleid;
+    }
 
-public void setPassword(String password) {
-	this.password = password;
-}
+    public String getUsername() {
+        return username;
+    }
 
-public String getEmail() {
-	return email;
-}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-public void setEmail(String email) {
-	this.email = email;
-}
+    public String getPassword() {
+        return password;
+    }
 
-@Override
-public String toString() {
-	return "User [userID=" + userID + ", roleID=" + roleID + ", username=" + username + ", password=" + password
-			+ ", email=" + email + "]";
-}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User [userid=" + userid + ", roleid=" + roleid + ", username=" + username + ", password=" + password +
+            ", email=" + email + "]";
+    }
 }
