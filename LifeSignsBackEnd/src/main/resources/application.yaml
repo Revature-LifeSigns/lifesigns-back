@@ -3,12 +3,22 @@ server:
  
 spring:
   datasource:
+<<<<<<< HEAD
     url: 
     username: 
     password: 
+=======
+    url: jdbc:postgresql://sept-2109-java-mj.citlrw3gp4ym.us-east-2.rds.amazonaws.com/lifesignsdb
+    username: lifesignsuser
+    password: P4ssw0rd
+>>>>>>> 18af979690402754fe7de3af8fe326b6aaead40e
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     hibernate:
+<<<<<<< HEAD
       ddl-auto: update
+=======
+      ddl-auto: create
+>>>>>>> 18af979690402754fe7de3af8fe326b6aaead40e
