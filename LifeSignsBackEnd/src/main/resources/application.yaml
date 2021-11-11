@@ -1,14 +1,14 @@
-server:
+server: 
   port: 9025
  
-spring:
-  datasource:
-    url: ${LifeSignsDBURL}
-    username: ${LifeSignsDBUsername}
-    password: ${LifeSignsDBPassword}
+spring: 
+  datasource: 
+    url: jdbc:postgresql://sept-2109-java-mj.citlrw3gp4ym.us-east-2.rds.amazonaws.com:5432/lifesignsdb
+    username: lifesignsuser
+    password: P4ssw0rd
     driver-class-name: org.postgresql.Driver
-  jpa:
+  jpa: 
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
-    hibernate:
+    hibernate: 
       ddl-auto: update
