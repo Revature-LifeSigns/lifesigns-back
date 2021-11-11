@@ -6,8 +6,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -61,19 +59,16 @@ public class Doctor {
 	@Id
 	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="user_fk")
-	//remove the comment here and delete 'Object' when the user model is ready
-	private Object /*  User */ user;
+
+	private User user;
 	
 	public Doctor() {
 		// TODO Auto-generated constructor stub
 	}
-
-	//
-	//CHANGE user DATATYPE TO User
-	//
+	
 	//constructor with all fields
 	public Doctor(int userId, String firstname, String lastname, Date dOB, String address, SerialBlob picture,
-			String aboutMe, boolean darkMode, CovidStatus covidStatus, Object user) {
+			String aboutMe, boolean darkMode, CovidStatus covidStatus, User user) {
 		super();
 		//this.userId = userId;
 		Firstname = firstname;
@@ -87,11 +82,8 @@ public class Doctor {
 		this.user = user;
 	}
 
-	//
-	//CHANGE user DATATYPE TO User
-	//
 	//constructor with id, first name, last name, DOB, and user object
-	public Doctor(int userId, String firstname, String lastname, Date dOB, Object user) {
+	public Doctor(int userId, String firstname, String lastname, Date dOB, User user) {
 		super();
 		//this.userId = userId;
 		Firstname = firstname;
@@ -180,17 +172,11 @@ public class Doctor {
 		this.covidStatus = covidStatus;
 	}
 
-	//
-	//CHANGE user DATATYPE TO User
-	//
-	public Object getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	//
-	//CHANGE user DATATYPE TO User
-	//
-	public void setUser(Object user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 

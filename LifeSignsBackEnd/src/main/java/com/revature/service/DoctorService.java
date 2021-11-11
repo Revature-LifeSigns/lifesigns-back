@@ -36,6 +36,10 @@ public class DoctorService {
 //		return doctorRepo.findByUserName(username);
 //	}
 	
+	public Doctor getDoctorByLastName(String lastname) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	public String deleteDoctor(Doctor doctor) {
 		// Can't write this out yet. Who is allowed to delete Doctors from the DB?
