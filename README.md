@@ -54,6 +54,7 @@ Revature 2109 Java/Angular/Microservices Batch:
  -  @sfunk11	
  -  @soniafaiza	
  -  @ZachJZ	
+ -  [Iaroslav Mokroguz](https://github.com/maustrauk)
 
 ## License
 This project uses an MIT license.
