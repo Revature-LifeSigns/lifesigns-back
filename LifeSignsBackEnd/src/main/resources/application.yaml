@@ -3,9 +3,9 @@ server:
  
 spring:
   datasource:
-    url: jdbc:postgresql://sept-2109-java-mj.citlrw3gp4ym.us-east-2.rds.amazonaws.com:5432/lifesignsdb
-    username: lifesignsuser
-    password: P4ssw0rd
+    url: ${LifeSignsDBURL}
+    username: ${LifeSignsDBUsername}
+    password: ${LifeSignsDBPassword}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
