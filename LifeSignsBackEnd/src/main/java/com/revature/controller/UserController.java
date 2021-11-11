@@ -1,4 +1,4 @@
-package com.example.controller;
+package com.revature.controller;
 
 import java.util.LinkedHashMap;
 
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.model.User;
-import com.example.service.BcryptPasswordEncoder;
-import com.example.service.UserService;
+import com.revature.model.User;
+import com.revature.service.UserService;
+import com.revature.util.BcryptPasswordEncoder;
 
 
 @RestController
