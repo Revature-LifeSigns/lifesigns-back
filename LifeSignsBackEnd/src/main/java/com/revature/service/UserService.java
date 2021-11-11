@@ -1,4 +1,4 @@
-package com.example.service;
+package com.revature.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.model.User;
-import com.example.repository.UserRepository;
+import com.revature.model.User;
+import com.revature.repository.UserRepository;
 
 @Service("userService")
 @Transactional

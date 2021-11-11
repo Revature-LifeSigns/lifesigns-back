@@ -1,4 +1,4 @@
-package com.example.service;
+package com.revature.util;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
