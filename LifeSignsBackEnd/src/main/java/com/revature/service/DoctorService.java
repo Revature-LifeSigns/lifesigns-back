@@ -32,9 +32,9 @@ public class DoctorService {
 		return doctorRepo.findByUserId(id);
 	}
 	
-	public Doctor getDoctorByUsername(String username) {
-		return doctorRepo.findByUserName(username);
-	}
+//	public Doctor getDoctorByUsername(String username) {
+//		return doctorRepo.findByUserName(username);
+//	}
 	
 	
 	public String deleteDoctor(Doctor doctor) {

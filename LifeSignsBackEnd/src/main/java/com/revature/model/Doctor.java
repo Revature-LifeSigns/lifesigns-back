@@ -30,6 +30,9 @@ public class Doctor {
 		View preference (boolean: 1-light, 0-dark) 
 		COVID status (none, exposed, vaccinated, quarantining) - lookup table 
 	 */
+	@Id
+	@Column(name="user_id", nullable=false, unique=true)
+	private int userId;
 	
 	@Column(name="Firstname", nullable=false)
 	private String Firstname;
@@ -58,22 +61,22 @@ public class Doctor {
 	@Column(name="COVID_status")
 	CovidStatus covidStatus;
 	
-	@Id
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	@JoinColumn(name="user_fk")
-	//remove the comment here and delete 'Object' when the user model is ready
-	private Object /*  User */ user;
-	
-	public Doctor() {
-		// TODO Auto-generated constructor stub
-	}
+//	@Id
+//	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//	@JoinColumn(name="user_fk")
+//	//remove the comment here and delete 'Object' when the user model is ready
+//	private Object /*  User */ user;
+//	
+//	public Doctor() {
+//		// TODO Auto-generated constructor stub
+//	}
 
 	//
 	//CHANGE user DATATYPE TO User
 	//
 	//constructor with all fields
 	public Doctor(int userId, String firstname, String lastname, Date dOB, String address, SerialBlob picture,
-			String aboutMe, boolean darkMode, CovidStatus covidStatus, Object user) {
+			String aboutMe, boolean darkMode, CovidStatus covidStatus/*,  Object user */) {
 		super();
 		//this.userId = userId;
 		Firstname = firstname;
@@ -84,7 +87,7 @@ public class Doctor {
 		this.aboutMe = aboutMe;
 		this.darkMode = darkMode;
 		this.covidStatus = covidStatus;
-		this.user = user;
+//		this.user = user;
 	}
 
 	//
@@ -97,7 +100,7 @@ public class Doctor {
 		Firstname = firstname;
 		Lastname = lastname;
 		DOB = dOB;
-		this.user = user;
+//		this.user = user;
 	}
 
 //	public int getUserId() {
@@ -180,26 +183,26 @@ public class Doctor {
 		this.covidStatus = covidStatus;
 	}
 
-	//
-	//CHANGE user DATATYPE TO User
-	//
-	public Object getUser() {
-		return user;
-	}
-
-	//
-	//CHANGE user DATATYPE TO User
-	//
-	public void setUser(Object user) {
-		this.user = user;
-	}
+//	//
+//	//CHANGE user DATATYPE TO User
+//	//
+//	public User getUser() {
+//		return user;
+//	}
+//
+//	//
+//	//CHANGE user DATATYPE TO User
+//	//
+//	public void setUser(Object user) {
+//		this.user = user;
+//	}
 
 	//ToString with all variables
 	@Override
 	public String toString() {
 		return "Doctor [Firstname=" + Firstname + ", Lastname=" + Lastname + ", DOB=" + DOB
 				+ ", address=" + address + ", picture=" + picture + ", aboutMe=" + aboutMe
-				+ ", darkMode=" + darkMode + ", covidStatus=" + covidStatus + ", user=" + user + "]";
+				+ ", darkMode=" + darkMode + ", covidStatus=" + covidStatus /*+ ", user=" + user*/ + "]";
 	}
 	
 	
