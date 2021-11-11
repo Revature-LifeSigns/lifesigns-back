@@ -6,6 +6,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -28,6 +30,15 @@ public class Doctor {
 		View preference (boolean: 1-light, 0-dark) 
 		COVID status (none, exposed, vaccinated, quarantining) - lookup table 
 	 */
+	
+	
+	@Id
+	@Column(name="doctorid")
+	//@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int doctorId;
+	
+	@OneToOne(mappedBy="doctor", cascade=CascadeType.ALL)
+    private User user;
 	
 	@Column(name="Firstname", nullable=false)
 	private String Firstname;
@@ -56,11 +67,9 @@ public class Doctor {
 	@Column(name="COVID_status")
 	CovidStatus covidStatus;
 	
-	@Id
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	@JoinColumn(name="user_fk")
-
-	private User user;
+//	@OneToOne(optional = false, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//	@JoinColumn(name="user_fk")
+//	private User user;
 	
 	public Doctor() {
 		// TODO Auto-generated constructor stub
