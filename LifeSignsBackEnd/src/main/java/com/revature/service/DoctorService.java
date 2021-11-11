@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.revature.model.Doctor;
-import com.revature.repositories.DoctorRepository;
+import com.revature.repository.DoctorRepository;
 
 public class DoctorService {
 	
@@ -28,13 +28,13 @@ public class DoctorService {
 		doctorRepo.save(doctor);
 	}
 	
-	public Doctor getDoctorByID(int id) {
-		return doctorRepo.findByUserId(id);
-	}
-	
-	public Doctor getDoctorByUsername(String username) {
-		return doctorRepo.findByUserName(username);
-	}
+//	public Doctor getDoctorByID(int id) {
+//		return doctorRepo.findByUserId(id);
+//	}
+//	
+//	public Doctor getDoctorByUsername(String username) {
+//		return doctorRepo.findByUserName(username);
+//	}
 	
 	
 	public String deleteDoctor(Doctor doctor) {
