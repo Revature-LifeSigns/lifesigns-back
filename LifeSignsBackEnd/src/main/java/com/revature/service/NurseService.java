@@ -2,7 +2,9 @@ package com.revature.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.revature.model.Nurse;
 import com.revature.repositories.NurseRepository;
 
@@ -17,6 +19,7 @@ public class NurseService {
 	}
 
 
+	@Autowired
 	public NurseService(NurseRepository nRepo) {
 		super();
 		this.nRepo = nRepo;
@@ -50,7 +53,7 @@ public class NurseService {
 		return nRepo.findByUserId(id);
 	}
 	
-	public void UpdateNurse(Nurse nurse) {
+	public void deleteNurse(Nurse nurse) {
 		nRepo.delete(nurse);
 		
 	}
