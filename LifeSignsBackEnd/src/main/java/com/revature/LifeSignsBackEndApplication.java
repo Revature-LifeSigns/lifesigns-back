@@ -11,6 +11,7 @@ public class LifeSignsBackEndApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LifeSignsBackEndApplication.class, args);
+		
 	}
 
 }
