@@ -59,7 +59,7 @@ public class DoctorController {
 	}
 	
 	@DeleteMapping("/{lastname}")
-	public ResponseEntity<String> delteDoctor(@PathVariable("lastname") String lastname) {
+	public ResponseEntity<String> deleteDoctor(@PathVariable("lastname") String lastname) {
 		Doctor doc = doctorService.getDoctorByLastName(lastname);
 		if(doc == null) {
 			return new ResponseEntity<String>("No User Of That Name: " +lastname, HttpStatus.NOT_FOUND);
@@ -78,5 +78,13 @@ public class DoctorController {
 		// }		
 		// return new ResponseEntity<>(newDoc, HttpStatus.CREATED);
 	//}
+	
+	//Need to write update doctor method
+	@PostMapping("/update")
+	public ResponseEntity<String> updateDoctor(@RequestBody Doctor doctor){
+		doctorService.updateDoctor(doctor);
+		return new ResponseEntity<String>("Profile Info Successfully Updated", HttpStatus.ACCEPTED);
+	}
+	
 	
 }
