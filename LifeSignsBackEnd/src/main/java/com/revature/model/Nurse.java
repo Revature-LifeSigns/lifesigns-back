@@ -207,26 +207,5 @@ public class Nurse {
 				+ ", aboutMe=" + aboutMe + ", viewPreference=" + viewPreference + ", covid_status=" + covid_status
 				+ "]";
 	}
-	
-	
-	
-	
-
-
-
-	
-	
-	
-	
-
-
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

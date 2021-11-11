@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.revature.model.Nurse;
+
 import lombok.NoArgsConstructor;
 
 @RestController
@@ -23,10 +25,14 @@ public class NurseController {
 		return new ResponseEntity<>("getNurseByUserId works! user_id = " + user_id, HttpStatus.OK);
 	}
 	
-	//todo: add request body
+	@GetMapping("username/{username}")
+	public ResponseEntity<Object> getNurseByUsername(@PathVariable("username") String username) {
+		return new ResponseEntity<>("getNurseByUsername works! username = " + username, HttpStatus.OK);
+	}
+	
 	@PostMapping("/update")
-	public ResponseEntity<Object> updateNurseProfile() {
-		return new ResponseEntity<>("updateNurseProfile works!", HttpStatus.OK);
+	public ResponseEntity<Object> updateNurseProfile(@RequestBody Nurse nurse) {
+		return new ResponseEntity<>("updateNurseProfile works! Nurse username = " + nurse.getUserName(), HttpStatus.OK);
 	}
 	
 	//todo: add request body
