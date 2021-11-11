@@ -48,13 +48,13 @@ public class UserController {
     }
 
     //POST: localhost:***/LifeSigns/register
-    //Include user in JSON format in the request body	
+    //Include user in JSON format in the request body
     @PostMapping(value = "/register")
     public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser != null)
             return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
-        //using the constructor User(int roleID, String username, String password, String email)
+        //using the constructor User(int roleID, String username, String password, String email), roleID must be parsed to int since the request body returns a hashmap of strings.
         User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"),
             passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
         uServ.insertUser(newUser);
