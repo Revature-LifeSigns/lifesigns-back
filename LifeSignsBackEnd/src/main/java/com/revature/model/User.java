@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 
@@ -16,6 +18,10 @@ public class User {
     @Column(name = "userid")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userid;
+    
+    @OneToOne
+    @PrimaryKeyJoinColumn(name="userid", referencedColumnName="doctorid")
+    private Doctor doctor;
 
     @Column(name = "roleid")
     private int roleid;
