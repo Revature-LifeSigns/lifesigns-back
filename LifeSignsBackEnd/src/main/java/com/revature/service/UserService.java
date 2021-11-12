@@ -47,8 +47,8 @@ public class UserService {
 	public User getUserByEmail(String email){
 		return uRepo.findByEmail(email);
 	}
-	public User getUserByRoleId(int RoleId){
-		return uRepo.findByRoleid(RoleId);
+	public List<User> getUserByRoleId(int roleid){
+		return uRepo.findByRoleid(roleid);
 }
 	
 	
