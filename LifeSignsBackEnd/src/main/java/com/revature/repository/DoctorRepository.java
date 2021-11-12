@@ -1,4 +1,4 @@
-package com.revature.repositories;
+package com.revature.repository;
 
 import java.util.List;
 
@@ -12,4 +12,5 @@ public interface DoctorRepository extends CrudRepository<Doctor, String>{
 	public List<Doctor> findAll();
 //	public Doctor findByUsername(String userName);
 	public Doctor findByUserId(int id);
+
 }

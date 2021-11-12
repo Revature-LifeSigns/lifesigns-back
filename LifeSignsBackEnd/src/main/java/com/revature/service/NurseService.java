@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.revature.model.Nurse;
-import com.revature.repositories.NurseRepository;
+import com.revature.repository.NurseRepository;
 
 @Service
 public class NurseService {
