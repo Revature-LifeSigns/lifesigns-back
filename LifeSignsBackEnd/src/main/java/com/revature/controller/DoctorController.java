@@ -36,7 +36,7 @@ public class DoctorController {
 	
 	@GetMapping("/initial")
 	public ResponseEntity<List<Doctor>> insertInitialDoctors() {
-		List<Doctor> doctorList = new ArrayList<Doctor>(Arrays.asList(new Doctor()));
+		List<Doctor> doctorList = new ArrayList<Doctor>(/*Arrays.asList(new Doctor())*/);
 		
 		for(Doctor d: doctorList) {
 			doctorService.insertDoctor(d);
