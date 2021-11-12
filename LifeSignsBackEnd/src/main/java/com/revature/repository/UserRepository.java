@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.revature.model.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String>{
+public interface UserRepository extends JpaRepository<User, Integer>{
 	
 	public List<User> findAll();
 	public User findByUsername(String username);
