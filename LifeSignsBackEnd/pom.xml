@@ -93,6 +93,23 @@
 		    <artifactId>aws-java-sdk-s3</artifactId>
 		     <version>1.12.52</version>
 		</dependency>
+		
+		<!-- Swagger Dependencies Start -->	
+			<dependency>
+			   <groupId>io.springfox</groupId>
+			   <artifactId>springfox-swagger2</artifactId>
+			   <version>2.9.2</version>
+			</dependency>
+			<dependency>
+			   <groupId>io.springfox</groupId>
+			   <artifactId>springfox-swagger-ui</artifactId>
+			   <version>2.9.2</version>
+			</dependency>
+			<dependency>
+			   <groupId>org.springframework.boot</groupId>
+			   <artifactId>spring-boot-starter-web</artifactId>
+			</dependency>					      
+        <!-- Swagger Dependencies End -->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
