@@ -1,7 +1,6 @@
 package com.revature.service;
 
 import java.util.List;
-import java.util.Optional;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.revature.model.User;
 import com.revature.repository.UserRepository;
+
 
 @Service("userService")
 @Transactional
@@ -40,19 +40,13 @@ public class UserService {
 		return uRepo.findByUsername(username);
 	}
 	
-	public User getUserByPassword(String password){
-		return uRepo.findByPassword(password);
-	}
-	
 	public User getUserByEmail(String email){
 		return uRepo.findByEmail(email);
 	}
-	public User getUserByRoleId(int RoleId){
-		return uRepo.findByRoleid(RoleId);
-}
 	
-	
-	
+	public User getUserByUserId(int userid) {
+		return uRepo.findByUserid(userid);
+	}
 	
 }
 
