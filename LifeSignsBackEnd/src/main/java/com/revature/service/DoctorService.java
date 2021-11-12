@@ -11,6 +11,7 @@ import com.revature.repository.DoctorRepository;
 @Service
 public class DoctorService {
 	
+	@Autowired
 	private DoctorRepository doctorRepo;
 	
 	public DoctorService() {
@@ -38,6 +39,7 @@ public class DoctorService {
 //		return doctorRepo.findByUserName(username);
 //	}
 	
+
 	public Doctor getDoctorByLastName(String lastname) {
 		// TODO Auto-generated method stub
 		return null;

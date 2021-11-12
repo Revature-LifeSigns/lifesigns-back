@@ -30,12 +30,15 @@ public class Doctor {
 		View preference (boolean: 1-light, 0-dark) 
 		COVID status (none, exposed, vaccinated, quarantining) - lookup table 
 	 */
-	
-	
 	@Id
-	@Column(name="doctorid")
-	//@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int doctorId;
+	@Column(name="user_id", nullable=false, unique=true)
+	private int userId;
+	
+	
+//	@Id
+//	@Column(name="doctorid")
+//	//@GeneratedValue(strategy=GenerationType.IDENTITY)
+//	private int doctorId;
 	
 	@OneToOne(mappedBy="doctor", cascade=CascadeType.ALL)
     private User user;
@@ -67,17 +70,23 @@ public class Doctor {
 	@Column(name="COVID_status")
 	CovidStatus covidStatus;
 	
-//	@OneToOne(optional = false, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+
+//	@Id
+//	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 //	@JoinColumn(name="user_fk")
-//	private User user;
-	
-	public Doctor() {
-		// TODO Auto-generated constructor stub
-	}
-	
+//	//remove the comment here and delete 'Object' when the user model is ready
+//	private Object /*  User */ user;
+//	
+//	public Doctor() {
+//		// TODO Auto-generated constructor stub
+//	}
+
+	//
+	//CHANGE user DATATYPE TO User
+	//
 	//constructor with all fields
 	public Doctor(int userId, String firstname, String lastname, Date dOB, String address, SerialBlob picture,
-			String aboutMe, boolean darkMode, CovidStatus covidStatus, User user) {
+			String aboutMe, boolean darkMode, CovidStatus covidStatus/*,  Object user */) {
 		super();
 		//this.userId = userId;
 		Firstname = firstname;
@@ -88,7 +97,7 @@ public class Doctor {
 		this.aboutMe = aboutMe;
 		this.darkMode = darkMode;
 		this.covidStatus = covidStatus;
-		this.user = user;
+//		this.user = user;
 	}
 
 	//constructor with id, first name, last name, DOB, and user object
@@ -98,7 +107,7 @@ public class Doctor {
 		Firstname = firstname;
 		Lastname = lastname;
 		DOB = dOB;
-		this.user = user;
+//		this.user = user;
 	}
 
 //	public int getUserId() {
@@ -181,6 +190,7 @@ public class Doctor {
 		this.covidStatus = covidStatus;
 	}
 
+
 	public User getUser() {
 		return user;
 	}
@@ -189,12 +199,13 @@ public class Doctor {
 		this.user = user;
 	}
 
+
 	//ToString with all variables
 	@Override
 	public String toString() {
 		return "Doctor [Firstname=" + Firstname + ", Lastname=" + Lastname + ", DOB=" + DOB
 				+ ", address=" + address + ", picture=" + picture + ", aboutMe=" + aboutMe
-				+ ", darkMode=" + darkMode + ", covidStatus=" + covidStatus + ", user=" + user + "]";
+				+ ", darkMode=" + darkMode + ", covidStatus=" + covidStatus /*+ ", user=" + user*/ + "]";
 	}
 	
 	
