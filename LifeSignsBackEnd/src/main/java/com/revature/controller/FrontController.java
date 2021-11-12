@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,21 +18,20 @@ import com.revature.model.User;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
-
-//@RestController
-//@RequestMapping(value = "/LifeSigns")
-//@CrossOrigin(origins = "*")
-public class UserController {
-    private UserService uServ;
-    private PasswordEncoder passwordEncoder;
-
+@RestController
+@RequestMapping(value = "/LifeSigns")
+@CrossOrigin(origins = "*")
+public class FrontController {
+	private UserService uServ;
+	private PasswordEncoder passwordEncoder;
+	
     @Autowired
-    public UserController(UserService uServ, BcryptPasswordEncoder BCryptHasher) {
+    public FrontController(UserService uServ, BcryptPasswordEncoder BCryptHasher) {
         super();
         this.uServ = uServ;
         this.passwordEncoder = BCryptHasher.getPasswordEncoder();
     }
-
+    
     //POST: localhost:***/LifeSigns/login
     //Include user in JSON format in the request body
     @PostMapping("/login")
@@ -39,12 +40,12 @@ public class UserController {
         // Then the database should have the BCrypt hashed version of the password and we'll check those.
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser == null) {
-            return new ResponseEntity < > ("No valid user with username", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
         }
         if (passwordEncoder.matches(userMap.get("password"), returnedUser.getPassword())) {
-            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.OK);
+            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.ACCEPTED);
         }
-        return new ResponseEntity < > ("Invalid login", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
     }
 
     //POST: localhost:***/LifeSigns/register
@@ -53,12 +54,20 @@ public class UserController {
     public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser != null)
-            return new ResponseEntity < > ("Username is taken", HttpStatus.CONFLICT); //409, conflict because already exists
+            return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
         //using the constructor User(int roleID, String username, String password, String email)
-        User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"),
-            passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+        //User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+        User newUser = new User("nurse", userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
         uServ.insertUser(newUser);
-        return new ResponseEntity < > (newUser, HttpStatus.CREATED); //201, created because user created
+        return new ResponseEntity < > (newUser, HttpStatus.ACCEPTED);
     }
+    
+	@GetMapping("/id/{id}")
+	public ResponseEntity<Object> getUserByUserId(@PathVariable("id") int user_id) {
+		return new ResponseEntity<>("getNurseByUserId works! user_id = " + user_id, HttpStatus.OK);
+	}
+	
+	
+	
 
 }

@@ -110,6 +110,13 @@
 			   <artifactId>spring-boot-starter-web</artifactId>
 			</dependency>					      
         <!-- Swagger Dependencies End -->
+        <!--  Email Sender Dependencies Start -->
+	        <dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>1.6.2</version>
+			</dependency>
+        <!--  Email Sender Dependencies End -->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
