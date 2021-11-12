@@ -29,12 +29,15 @@ public class UserService {
 	public List<User> getAllUsers(){
 		return uRepo.findAll();
 	}
+	
     public void insertUser(User user) {
     	uRepo.save(user);
     }
+    
 	public void deleteUser(User user) {
 		uRepo.delete(user);
 	}
+	
 	
 	public User getUserByUsername(String username){
 		return uRepo.findByUsername(username);
@@ -44,8 +47,23 @@ public class UserService {
 		return uRepo.findByPassword(password);
 	}
 	
+	
+	public User getUserByUsernameAndPassword(String Username, String password) {
+		return uRepo.findByUsernameAndPassword(Username, password);
+		
+	}
+	
+	
+	public User getUserByRole(String role) {
+		return uRepo.findByRole(role);
+	}
+	
 	public User getUserByEmail(String email){
 		return uRepo.findByEmail(email);
+	}
+	
+	public User getUserByFirstAndLastname(String firstName, String lastName) {
+		return uRepo.findByFirstAndLastname(firstName, lastName);
 	}
 	
 }
