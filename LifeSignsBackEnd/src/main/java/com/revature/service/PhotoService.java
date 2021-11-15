@@ -26,11 +26,11 @@ public class PhotoService {
 	private final FileStore fileStore;
 	private final PhotoRepository pRepo;
 	private final UserRepository uRepo;
-	private UserService uServ;
+
 	
 
 
-	public Photo savePhoto( MultipartFile file, int uploader) {
+	public void savePhoto( MultipartFile file, int uploader) {
 		 //check if the file is empty
         if (file.isEmpty()) {
         	log.error("savePhoto passed a empty file");
@@ -41,9 +41,9 @@ public class PhotoService {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("Content-Type", file.getContentType());
         metadata.put("Content-Length", String.valueOf(file.getSize()));
-        //Save Image in S3 and then save Todo in the database
+        //Save Image in S3 and then save in the database
 
-        String path = String.format("%s", "puzzle-alchemy-pieces");
+        String path = String.format("%s", "lifesigns");
 
         String fileName = String.format("%s", file.getOriginalFilename());
         try {
@@ -57,7 +57,7 @@ public class PhotoService {
                 .imagePath(path)
                 .imageFileName(fileName)
                 .build();
-        photo.setUploader(uRepo.findById(uploader));
+        photo.setUploader(uRepo.findByUserid(uploader));
         pRepo.save(photo);
 	}
 

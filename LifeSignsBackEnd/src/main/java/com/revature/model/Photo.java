@@ -29,7 +29,7 @@ public class Photo {
 	    private String imageFileName;
 	    @ManyToOne
 	    @JoinColumn(name = "uploader", nullable=false )
-	    private int userid;
+	    private User uploader;
 	   
 
 
