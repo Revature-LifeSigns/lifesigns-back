@@ -2,7 +2,9 @@ package com.revature.service;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.revature.model.Photo;
+import com.revature.model.User;
 import com.revature.repository.PhotoRepository;
 import com.revature.repository.UserRepository;
 
@@ -61,7 +64,11 @@ public class PhotoService {
         pRepo.save(photo);
 	}
 
-
-
+	public Photo getProfilePhoto(int userid) {
+		Photo photo = pRepo.findByUploader(userid);
+      
+        log.info("getProfilePhoto returns the user's photo");
+        return photo;
+	}
 }
 

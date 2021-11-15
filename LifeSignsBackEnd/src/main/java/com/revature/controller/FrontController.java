@@ -107,6 +107,11 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
+	@GetMapping("/photo/{id}")
+	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")int id) {
+		return new ResponseEntity<Photo>(pServ.getProfilePhoto(id), HttpStatus.OK);
+	}
+	
 	@GetMapping("/chart")
 	public ResponseEntity<List<PatientChart>> getAllCharts() {
 		return new ResponseEntity<List<PatientChart>>(pcServ.getAllCharts(), HttpStatus.OK);
