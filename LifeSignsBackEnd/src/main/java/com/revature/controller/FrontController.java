@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,10 +17,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+
+import com.revature.model.Photo;
+import com.revature.model.User;
+import com.revature.service.PhotoService;
 
 import com.revature.model.PatientChart;
-import com.revature.model.User;
 import com.revature.service.PatientChartService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
@@ -30,14 +37,17 @@ import com.revature.util.BcryptPasswordEncoder;
 public class FrontController {
 	private UserService uServ;
 	private PatientChartService pcServ;
+
+	private PhotoService pServ;
 	private PasswordEncoder passwordEncoder;
 	
     @Autowired
-    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher) {
+    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ) {
         super();
         this.uServ = uServ;
         this.pcServ = pcServ;
         this.passwordEncoder = BCryptHasher.getPasswordEncoder();
+        this.pServ = pServ;
     }
     
     //POST: localhost:***/LifeSigns/login
@@ -135,6 +145,19 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
 	}
 	
+	//POST: localhost:***/LifeSigns/photo
+    //Include the photo file in the request body.
+	 @PostMapping(
+	            path = "/photo",
+	            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+	            produces = MediaType.APPLICATION_JSON_VALUE
+	    )    
+	    public ResponseEntity<String> savePhoto(
+	                                         @RequestParam("file") MultipartFile file, @RequestParam("uploader") int uploader){
+		 pServ.savePhoto(file, uploader);
+		 return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
+	    }
+
 	@PostMapping("/chart/insert")
 	public ResponseEntity<Object> insertChart(@RequestBody PatientChart chart) {
 		if (pcServ.getChartByChartId(chart.getChartid()) != null) {
