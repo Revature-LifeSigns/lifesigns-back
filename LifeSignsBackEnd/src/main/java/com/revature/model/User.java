@@ -1,5 +1,8 @@
 package com.revature.model;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,22 +12,28 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Entity
 @Table(name = "users")
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
-    @Id
+	@Id
     @Column(name = "userid")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userid;
-    
-    @OneToOne
-    @PrimaryKeyJoinColumn(name="userid", referencedColumnName="doctorid")
-    private Doctor doctor;
 
-    @Column(name = "roleid")
-    private int roleid;
+	
+    @Column(name = "role")
+    private String role; //doctor, nurse, admin
+
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -34,77 +43,54 @@ public class User {
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+    
+	@Column(name="firstname", nullable=false)
+	private String firstName;
+	
+	@Column(name="lastname", nullable=false)
+	private String lastName;
+	
+	@Column(name="dob", nullable=false)
+	private LocalDate dob;
+	
+	@Column(name="address")
+	private String address;
+	
+    @Column(name="profile_image")
+    private byte[] profile_image;
+	
+	@Column(name="about_me")
+	private String aboutMe;
+	
+	@Column(name="view_preference")
+	private Boolean viewPreference;
+	
+	@Column(name="covid_status")
+	private String covid_status;
 
-    public User() {
+	public User(String role, String username, String password, String email, String firstName, String lastName,
+			LocalDate dob, Boolean viewPreference) {
+		super();
+		this.role = role;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.dob = dob;
+		this.viewPreference = viewPreference;
+	}
+	
+    //using the constructor User(String role, String username, String password, String email)
+	public User(String role, String username, String password, String email) {
+		super();
+		this.role = role;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+	}
+	
 
-    }
+	
 
-    public User(int userid, int roleid, String username, String password, String email) {
-        super();
-        this.userid = userid;
-        this.roleid = roleid;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-
-    public User(int roleid, String username, String password, String email) {
-        super();
-        this.roleid = roleid;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-
-    public User(String username, String password) {
-        super();
-        this.username = username;
-        this.password = password;
-    }
-
-    public int getUserid() {
-        return userid;
-    }
-
-    public void setUserid(int userid) {
-        this.userid = userid;
-    }
-
-    public int getRoleid() {
-        return roleid;
-    }
-
-    public void setRoleid(int roleid) {
-        this.roleid = roleid;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override
-    public String toString() {
-        return "User [userid=" + userid + ", roleid=" + roleid + ", username=" + username + ", password=" + password +
-            ", email=" + email + "]";
-    }
 }
