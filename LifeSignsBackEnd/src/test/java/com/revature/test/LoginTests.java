@@ -54,7 +54,7 @@ class LoginTests {
 		expectedInputJSON.put("username", "user1");
 		expectedInputJSON.put("password", rawPassword);
 		expectedInputJSON.put("email", "user@gmail.com");
-		expectedInputJSON.put("roleID", "0");
+		expectedInputJSON.put("role", "nurse");
 		
         databaseUser = new User("nurse", "user1",encodedPassword,"user@gmail.com");
     }
@@ -81,7 +81,7 @@ class LoginTests {
     		.content(asJSONString(expectedInputJSON))
 			.contentType(MediaType.APPLICATION_JSON)
 			.accept(MediaType.APPLICATION_JSON))
-        	.andExpect(status().isUnauthorized());
+        	.andExpect(status().isForbidden());
     }
     
     @Test 
@@ -91,7 +91,7 @@ class LoginTests {
 				.content(asJSONString(expectedInputJSON))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+				.andExpect(status().isAccepted());
     }
     
     @Test 
@@ -102,7 +102,7 @@ class LoginTests {
 				.content(asJSONString(expectedInputJSON))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isUnauthorized());
+    			.andExpect(status().isForbidden());
     }
     
     @Test 
@@ -112,7 +112,7 @@ class LoginTests {
 				.content(asJSONString(expectedInputJSON))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isConflict());
+    			.andExpect(status().isForbidden());
     }
     
     @Test 
@@ -122,7 +122,7 @@ class LoginTests {
 				.content(asJSONString(expectedInputJSON))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-    			.andExpect(status().isCreated());
+    			.andExpect(status().isAccepted());
     }
 
     @Test 
