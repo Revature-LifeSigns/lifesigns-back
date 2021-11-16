@@ -1,7 +1,7 @@
 package com.revature.controller;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -21,13 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import com.revature.model.Photo;
-import com.revature.model.User;
-import com.revature.service.PhotoService;
-
 import com.revature.model.PatientChart;
+import com.revature.model.Unit;
+import com.revature.model.UnitAssignment;
+import com.revature.model.User;
 import com.revature.service.PatientChartService;
+import com.revature.service.PhotoService;
+import com.revature.service.UnitAssignmentService;
+import com.revature.service.UnitService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
@@ -41,13 +42,18 @@ public class FrontController {
 	private PhotoService pServ;
 	private PasswordEncoder passwordEncoder;
 	
+	private UnitService unitServ;
+	private UnitAssignmentService uaServ;
+	
     @Autowired
-    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ) {
+    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ, UnitService unitServ, UnitAssignmentService uaServ) {
         super();
         this.uServ = uServ;
         this.pcServ = pcServ;
         this.passwordEncoder = BCryptHasher.getPasswordEncoder();
         this.pServ = pServ;
+        this.unitServ = unitServ;
+        this.uaServ = uaServ;
     }
     
     //POST: localhost:***/LifeSigns/login
@@ -121,6 +127,14 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.OK);
 	}
 	
+	@GetMapping("/admin/units")
+	public ResponseEntity<List<Unit>> getHospitalUnits(){
+		List<Unit> units = unitServ.getAllUnits();
+		if(units == null)
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(units, HttpStatus.OK);
+	}
+	
 	//********************
     //POST Methods
     //********************
@@ -182,6 +196,29 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.ACCEPTED);
 	}
 	
+	@PostMapping("/admin/assign-units/{id}")
+	public ResponseEntity<Object> insertOrUpdateUnitAssignment(@RequestBody Unit unit, @PathVariable("id") int userid){
+		User user = uServ.getUserByUserId(userid);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		System.out.println(unit);
+		Unit foundUnit = unitServ.getUnitByName(unit.getUnit());	
+		if(foundUnit == null)
+			return new ResponseEntity<>("Unit not found", HttpStatus.NOT_FOUND);
+		
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment != null) {
+			assignment.setUnit(foundUnit);
+			uaServ.updateUnitAssignment(assignment);
+		}else {
+			UnitAssignment newAssignment = new UnitAssignment(user, foundUnit);
+			uaServ.insertUnitAssignment(newAssignment);
+		}
+		List<UnitAssignment> uaList = uaServ.getAllAssignments();
+		return new ResponseEntity<>(uaList, HttpStatus.OK);
+			
+	}
+	
 	//********************
     //DELETE Methods
     //********************
@@ -202,6 +239,19 @@ public class FrontController {
 		}
 		pcServ.deleteChart(pcServ.getChartByChartId(chartid));
 		return new ResponseEntity<>("Chart with id " + chartid + " deleted.", HttpStatus.ACCEPTED);
+	}
+	
+	//********************
+    //For Initialization Purporses
+    //********************
+	
+	@GetMapping("/units/initialize")
+	public ResponseEntity<List<Unit>> insertInitialUnits(){
+		List<Unit> unitList = new ArrayList<>(Arrays.asList(new Unit("Main Floor"), new Unit("Trauma"), new Unit("ER"), new Unit("Physical Therapy"), new Unit("ICU"), new Unit("Hospice Care"), new Unit("Surgery"), new Unit("Rehabilitation")));
+		for(Unit unit: unitList) {
+			unitServ.insertUnit(unit);
+		}
+		return new ResponseEntity<List<Unit>>(unitList, HttpStatus.CREATED);
 	}
 	
 	//********************
