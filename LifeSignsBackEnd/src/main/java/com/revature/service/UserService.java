@@ -40,12 +40,12 @@ public class UserService {
 		return uRepo.findByUsername(username);
 	}
 	
-	public User getUserByPassword(String password){
-		return uRepo.findByPassword(password);
-	}
-	
 	public User getUserByEmail(String email){
 		return uRepo.findByEmail(email);
+	}
+	
+	public User getUserByUserId(int userid) {
+		return uRepo.findByUserid(userid);
 	}
 	
 }

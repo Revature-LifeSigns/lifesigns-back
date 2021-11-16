@@ -32,14 +32,14 @@ public class PatientChart {
 	@Id
     @Column(name = "chartid")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userid;
+    private int chartid;
 	
 	@JoinColumn(name = "doctor")
-	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	private User doctor;
 	
 	@JoinColumn(name = "nurse")
-	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	private User nurse;
 	
 	@Column(name="firstname", nullable=false)
@@ -71,6 +71,23 @@ public class PatientChart {
 	
 	@Column(name="treatment")
 	private String treatment; //created by doctor
-	
+
+	public PatientChart(User doctor, User nurse, String firstName, String lastName, String email, LocalDate dob,
+			String address, String insuranceid, String notes, String diagnosis, Boolean diagnosis_approved,
+			String treatment) {
+		super();
+		this.doctor = doctor;
+		this.nurse = nurse;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.dob = dob;
+		this.address = address;
+		this.insuranceid = insuranceid;
+		this.notes = notes;
+		this.diagnosis = diagnosis;
+		this.diagnosis_approved = diagnosis_approved;
+		this.treatment = treatment;
+	}
 	
 }
