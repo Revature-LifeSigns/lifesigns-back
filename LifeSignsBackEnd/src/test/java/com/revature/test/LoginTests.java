@@ -56,7 +56,7 @@ class LoginTests {
 		expectedInputJSON.put("email", "user@gmail.com");
 		expectedInputJSON.put("roleID", "0");
 		
-        databaseUser = new User(0, 1,"user1",encodedPassword,"user@gmail.com");
+        databaseUser = new User("nurse", "user1",encodedPassword,"user@gmail.com");
     }
     
     /*
