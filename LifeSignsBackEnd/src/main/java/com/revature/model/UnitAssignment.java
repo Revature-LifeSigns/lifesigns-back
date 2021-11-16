@@ -57,5 +57,12 @@ public class UnitAssignment {
 	public int getUnitAssignmentId() {
 		return unitAssignmentId;
 	}
+
+	@Override
+	public String toString() {
+		return "UnitAssignment [unitAssignmentId=" + unitAssignmentId + ", user=" + user + ", unit=" + unit + "]";
+	}
+	
+
 	
 }
