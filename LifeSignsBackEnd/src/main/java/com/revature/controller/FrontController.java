@@ -135,6 +135,12 @@ public class FrontController {
 		if (uServ.getUserByUserId(user.getUserid()) != null) {
 			return new ResponseEntity<>("User with id " + user.getUserid() + " already exists.", HttpStatus.FORBIDDEN);
 		}
+		else if (uServ.getUserByEmail(user.getEmail()) != null) {
+			return new ResponseEntity<>("User with email " + user.getEmail() + " already exists.", HttpStatus.FORBIDDEN);
+		}
+		else if (uServ.getUserByUsername(user.getUsername()) != null) {
+			return new ResponseEntity<>("User with username " + user.getUsername() + " already exists.", HttpStatus.FORBIDDEN);
+		}
 		String encryptedPassword = passwordEncoder.encode(user.getPassword());
 		user.setPassword(encryptedPassword);
 		uServ.insertUser(user);

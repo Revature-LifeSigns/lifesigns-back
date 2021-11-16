@@ -81,7 +81,7 @@ public class User {
 		this.viewPreference = viewPreference;
 	}
 	
-    //using the constructor User(int roleID, String username, String password, String email)
+    //using the constructor User(String role, String username, String password, String email)
 	public User(String role, String username, String password, String email) {
 		super();
 		this.role = role;
