@@ -81,7 +81,21 @@ public class User {
 		this.viewPreference = viewPreference;
 	}
 	
-    //using the constructor User(String role, String username, String password, String email)
+    // Used to register a user
+	public User(String role, String username, String password, String email, String firstname, String lastname,
+			LocalDate dob, String address) {
+		super();
+		this.role = role;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.firstName = firstname;
+		this.lastName = lastname;
+		this.dob = dob;
+		this.address = address;
+	}
+	
+	// Used to login a user 
 	public User(String role, String username, String password, String email) {
 		super();
 		this.role = role;
@@ -89,8 +103,4 @@ public class User {
 		this.password = password;
 		this.email = email;
 	}
-	
-
-	
-
 }
