@@ -1,5 +1,6 @@
 package com.revature.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -48,5 +49,15 @@ public class UserService {
 		return uRepo.findByUserid(userid);
 	}
 	
-}
+	public User getUserByDof(LocalDate dob) {
+		return uRepo.findByDob(dob);
+	}
+	
+	public User getUserByAddress(String address) {
+		return uRepo.findByAddress(address);
+	}	
 
+	public User getUserByCovidStatus(String covid_status) {
+		return uRepo.findByCovidStatus(covid_status);
+}
+}
