@@ -73,7 +73,7 @@ public class FrontController {
         
         User newUser = new User(userMap.get("role"), userMap.get("username"),
             passwordEncoder.encode(userMap.get("password")), userMap.get("email"),
-            userMap.get("firstName"), userMap.get("lastName"),
+            userMap.get("firstname"), userMap.get("lastname"),
             LocalDate.parse(userMap.get("dob")), userMap.get("address"));
         uServ.insertUser(newUser);
         return new ResponseEntity < > (newUser, HttpStatus.CREATED); //201, created because user created
