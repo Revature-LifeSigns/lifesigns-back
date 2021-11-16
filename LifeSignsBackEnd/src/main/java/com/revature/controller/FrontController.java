@@ -1,10 +1,10 @@
 package com.revature.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,13 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import com.revature.model.Photo;
-import com.revature.model.User;
-import com.revature.service.PhotoService;
-
 import com.revature.model.PatientChart;
+import com.revature.model.User;
 import com.revature.service.PatientChartService;
+import com.revature.service.PhotoService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
@@ -58,12 +55,12 @@ public class FrontController {
         // Then the database should have the BCrypt hashed version of the password and we'll check those.
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser == null) {
-            return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+            return new ResponseEntity < > ("No valid user with username", HttpStatus.UNAUTHORIZED);
         }
         if (passwordEncoder.matches(userMap.get("password"), returnedUser.getPassword())) {
-            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.ACCEPTED);
+            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.OK);
         }
-        return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+        return new ResponseEntity < > ("Invalid login", HttpStatus.UNAUTHORIZED);
     }
 
     //POST: localhost:***/LifeSigns/register
@@ -72,12 +69,30 @@ public class FrontController {
     public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser != null)
-            return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
+            return new ResponseEntity < > ("Username is taken", HttpStatus.CONFLICT); //409, conflict because already exists
         //using the constructor User(int roleID, String username, String password, String email)
-        //User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
-        User newUser = new User("nurse", userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+        User newUser = new User(userMap.get("roleID"), userMap.get("username"),
+            passwordEncoder.encode(userMap.get("password")), userMap.get("email"),
+            userMap.get("firstName"), userMap.get("lastName"),
+            LocalDate.parse(userMap.get("dob")), Boolean.valueOf(userMap.get("viewPreference")));
         uServ.insertUser(newUser);
-        return new ResponseEntity < > (newUser, HttpStatus.ACCEPTED);
+        return new ResponseEntity < > (newUser, HttpStatus.CREATED); //201, created because user created
+    }
+
+    //POST: localhost:***/LifeSigns/changePassword
+    //Include user in JSON format in the request body, expecting username, currentPassword, and newPassword.
+    @PostMapping(value = "/changePassword")
+    public ResponseEntity < Object > changePassword(@RequestBody LinkedHashMap < String, String > userMap) {
+        User returnedUser = uServ.getUserByUsername(userMap.get("username"));
+        if (returnedUser == null)
+            return new ResponseEntity < > ("Username doesn't exist", HttpStatus.CONFLICT); //409, conflict, how did we get here with invalid username?
+        //using the constructor User(int roleID, String username, String password, String email)
+        if (!passwordEncoder.matches(userMap.get("currentPassword"), returnedUser.getPassword())) {
+            return new ResponseEntity < > ("Username doesn't exist", HttpStatus.UNAUTHORIZED); //401, because user+currentpw is incorrect
+        }
+        returnedUser.setPassword(passwordEncoder.encode(userMap.get("newPassword")));
+        uServ.insertUser(returnedUser); //says insertUser but it will update the current user
+        return new ResponseEntity < > (returnedUser, HttpStatus.OK); //200, OK
     }
     
     //********************
