@@ -1,4 +1,3 @@
-
 package com.revature.model;
 
 import javax.persistence.Column;
@@ -62,7 +61,5 @@ public class UnitAssignment {
 	public String toString() {
 		return "UnitAssignment [unitAssignmentId=" + unitAssignmentId + ", user=" + user + ", unit=" + unit + "]";
 	}
-	
-
 	
 }
