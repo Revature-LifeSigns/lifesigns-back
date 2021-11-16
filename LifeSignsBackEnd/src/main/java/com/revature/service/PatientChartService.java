@@ -23,7 +23,7 @@ public class PatientChartService {
 		this.pcRepo = pcRepo;
 	}
 	
-	public List<PatientChart> getAllUsers(){
+	public List<PatientChart> getAllCharts(){
 		return pcRepo.findAll();
 	}
     public void insertChart(PatientChart chart) {
@@ -33,5 +33,8 @@ public class PatientChartService {
 		pcRepo.delete(chart);
 	}
 	
+	public PatientChart getChartByChartId(int chartid) {
+		return pcRepo.findByChartid(chartid);
+	}
 
 }
