@@ -36,5 +36,44 @@ public class PatientChartService {
 	public PatientChart getChartByChartId(int chartid) {
 		return pcRepo.findByChartid(chartid);
 	}
+	
+	public void updateChart(PatientChart chart, PatientChart changes) {
+		if (changes.getDoctor() != null) {
+			chart.setDoctor(changes.getDoctor());
+		}
+		if (changes.getNurse() != null) {
+			chart.setNurse(changes.getNurse());
+		}
+		if (changes.getFirstName() != null && !changes.getFirstName().isEmpty()) {
+			chart.setFirstName(changes.getFirstName());
+		}
+		if (changes.getLastName() != null && !changes.getLastName().isEmpty()) {
+			chart.setLastName(changes.getLastName());
+		}
+		if (changes.getEmail() != null && !changes.getEmail().isEmpty()) {
+			chart.setEmail(changes.getEmail());
+		}
+		if (changes.getDob() != null) {
+			chart.setDob(changes.getDob());
+		}
+		if (changes.getAddress() != null && !changes.getAddress().isEmpty()) {
+			chart.setAddress(changes.getAddress());
+		}
+		if (changes.getInsuranceid() != null && !changes.getInsuranceid().isEmpty()) {
+			chart.setInsuranceid(changes.getInsuranceid());
+		}
+		if (changes.getNotes() != null && !changes.getNotes().isEmpty()) {
+			chart.setNotes(changes.getNotes());
+		}
+		if (changes.getDiagnosis() != null && !changes.getDiagnosis().isEmpty()) {
+			chart.setDiagnosis(changes.getDiagnosis());
+		}
+		if (changes.getDiagnosis_approved() != null) {
+			chart.setDiagnosis_approved(changes.getDiagnosis_approved());
+		}
+		if (changes.getTreatment() != null && !changes.getTreatment().isEmpty()) {
+			chart.setTreatment(changes.getTreatment());
+		}
+	}
 
 }
