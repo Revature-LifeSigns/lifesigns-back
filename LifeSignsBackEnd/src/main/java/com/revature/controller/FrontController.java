@@ -70,11 +70,11 @@ public class FrontController {
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser != null)
             return new ResponseEntity < > ("Username is taken", HttpStatus.CONFLICT); //409, conflict because already exists
-        //using the constructor User(int roleID, String username, String password, String email)
-        User newUser = new User(userMap.get("roleID"), userMap.get("username"),
+        
+        User newUser = new User(userMap.get("role"), userMap.get("username"),
             passwordEncoder.encode(userMap.get("password")), userMap.get("email"),
             userMap.get("firstName"), userMap.get("lastName"),
-            LocalDate.parse(userMap.get("dob")), Boolean.valueOf(userMap.get("viewPreference")));
+            LocalDate.parse(userMap.get("dob")), userMap.get("address"));
         uServ.insertUser(newUser);
         return new ResponseEntity < > (newUser, HttpStatus.CREATED); //201, created because user created
     }
