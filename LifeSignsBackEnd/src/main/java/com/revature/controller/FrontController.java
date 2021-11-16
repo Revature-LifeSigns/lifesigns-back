@@ -1,7 +1,5 @@
 package com.revature.controller;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -13,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import com.revature.model.Photo;
-import com.revature.model.User;
-import com.revature.service.PhotoService;
-
 import com.revature.model.PatientChart;
+import com.revature.model.User;
 import com.revature.service.PatientChartService;
+import com.revature.service.PhotoService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
@@ -41,54 +37,56 @@ public class FrontController {
 	private PhotoService pServ;
 	private PasswordEncoder passwordEncoder;
 	
-    @Autowired
-    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ) {
-        super();
-        this.uServ = uServ;
-        this.pcServ = pcServ;
-        this.passwordEncoder = BCryptHasher.getPasswordEncoder();
-        this.pServ = pServ;
-    }
+	@Autowired
+	public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ) {
+		super();
+		this.uServ = uServ;
+		this.pcServ = pcServ;
+		this.passwordEncoder = BCryptHasher.getPasswordEncoder();
+		this.pServ = pServ;
+	}
     
-    //POST: localhost:***/LifeSigns/login
-    //Include user in JSON format in the request body
-    @PostMapping("/login")
-    public ResponseEntity < Object > validateUser(@RequestBody LinkedHashMap < String, String > userMap) {
-        // Right now, the user should contain the unhashed password stored in the user object.
-        // Then the database should have the BCrypt hashed version of the password and we'll check those.
-        User returnedUser = uServ.getUserByUsername(userMap.get("username"));
-        if (returnedUser == null) {
-            return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
-        }
-        if (passwordEncoder.matches(userMap.get("password"), returnedUser.getPassword())) {
-            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.ACCEPTED);
-        }
-        return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
-    }
+	//POST: localhost:***/LifeSigns/login
+	//Include user in JSON format in the request body
+	@PostMapping("/login")
+	public ResponseEntity < Object > validateUser(@RequestBody LinkedHashMap < String, String > userMap) {
+		// Right now, the user should contain the unhashed password stored in the user object.
+		// Then the database should have the BCrypt hashed version of the password and we'll check those.
+		User returnedUser = uServ.getUserByUsername(userMap.get("username"));
+		if (returnedUser == null) {
+			return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+		}
+		if (passwordEncoder.matches(userMap.get("password"), returnedUser.getPassword())) {
+			return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.ACCEPTED);
+		}
+		return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+	}
 
-    //POST: localhost:***/LifeSigns/register
-    //Include user in JSON format in the request body	
-    @PostMapping(value = "/register")
-    public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
-        User returnedUser = uServ.getUserByUsername(userMap.get("username"));
-        if (returnedUser != null)
-            return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
-        //using the constructor User(int roleID, String username, String password, String email)
-        //User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
-        User newUser = new User("nurse", userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
-        uServ.insertUser(newUser);
-        return new ResponseEntity < > (newUser, HttpStatus.ACCEPTED);
-    }
+	//POST: localhost:***/LifeSigns/register
+	//Include user in JSON format in the request body	
+	@PostMapping(value = "/register")
+	public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
+		User returnedUser = uServ.getUserByUsername(userMap.get("username"));
+		if (returnedUser != null)
+			return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
+		//using the constructor User(int roleID, String username, String password, String email)
+		//User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+		User newUser = new User("nurse", userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+		uServ.insertUser(newUser);
+		return new ResponseEntity < > (newUser, HttpStatus.ACCEPTED);
+	}
     
-    //********************
-    //GET Methods
-    //********************
+	//********************
+	//GET Methods
+	//********************
     
+	//GET: localhost:***/LifeSigns/user
 	@GetMapping("/user")
 	public ResponseEntity<List<User>> getAllUsers() {
 		return new ResponseEntity<List<User>>(uServ.getAllUsers(), HttpStatus.OK);
 	}
     
+	//GET: localhost:***/LifeSigns/user/id/{id}
 	@GetMapping("/user/id/{id}")
 	public ResponseEntity<User> getUserByUserId(@PathVariable("id") int userid) {
 		User user = uServ.getUserByUserId(userid);
@@ -98,6 +96,7 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
+	//GET: localhost:***/LifeSigns/user/username/{username}
 	@GetMapping("/user/username/{username}")
 	public ResponseEntity<User> getUserByUsername(@PathVariable("username") String username) {
 		User user = uServ.getUserByUsername(username);
@@ -107,11 +106,13 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
+	//GET: localhost:***/LifeSigns/chart
 	@GetMapping("/chart")
 	public ResponseEntity<List<PatientChart>> getAllCharts() {
 		return new ResponseEntity<List<PatientChart>>(pcServ.getAllCharts(), HttpStatus.OK);
 	}
 	
+	//GET: localhost:***/LifeSigns/chart/id/{id}
 	@GetMapping("/chart/id/{id}")
 	public ResponseEntity<PatientChart> getChartByChartId(@PathVariable("id") int chartid) {
 		PatientChart chart = pcServ.getChartByChartId(chartid);
@@ -122,9 +123,11 @@ public class FrontController {
 	}
 	
 	//********************
-    //POST Methods
-    //********************
+	//POST Methods
+	//********************
 	
+	//POST: localhost:***/LifeSigns/user/insert
+	//Include user in the request body
 	@PostMapping("/user/insert")
 	public ResponseEntity<Object> insertUser(@RequestBody User user) {
 		if (uServ.getUserByUserId(user.getUserid()) != null) {
@@ -142,28 +145,32 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 	
+	//POST: localhost:***/LifeSigns/user/update
+	//Deprecated, use patch method instead
 	@PostMapping("/user/update")
 	public ResponseEntity<Object> updateUser(@RequestBody User user) {
 		if (uServ.getUserByUserId(user.getUserid()) == null) {
 			return new ResponseEntity<>("User with id " + user.getUserid() + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
-		uServ.insertUser(user);	
+		uServ.insertUser(user);
 		return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
 	}
 	
 	//POST: localhost:***/LifeSigns/photo
-    //Include the photo file in the request body.
-	 @PostMapping(
-	            path = "/photo",
-	            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-	            produces = MediaType.APPLICATION_JSON_VALUE
-	    )    
-	    public ResponseEntity<String> savePhoto(
-	                                         @RequestParam("file") MultipartFile file, @RequestParam("uploader") int uploader){
-		 pServ.savePhoto(file, uploader);
-		 return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
-	    }
+	//Include the photo file in the request body.
+	@PostMapping(
+			path = "/photo",
+			consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE
+		)    
+		public ResponseEntity<String> savePhoto(
+				@RequestParam("file") MultipartFile file, @RequestParam("uploader") int uploader){
+			pServ.savePhoto(file, uploader);
+			return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
+	}
 
+	//POST: localhost:***/LifeSigns/chart/insert
+	//Include chart in the request body
 	@PostMapping("/chart/insert")
 	public ResponseEntity<Object> insertChart(@RequestBody PatientChart chart) {
 		if (pcServ.getChartByChartId(chart.getChartid()) != null) {
@@ -173,6 +180,8 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.CREATED);
 	}
 	
+	//POST: localhost:***/LifeSigns/chart/update
+	//Deprecated, use patch method instead
 	@PostMapping("/chart/update")
 	public ResponseEntity<Object> updateChart(@RequestBody PatientChart chart) {
 		if (pcServ.getChartByChartId(chart.getChartid()) == null) {
@@ -183,8 +192,38 @@ public class FrontController {
 	}
 	
 	//********************
-    //DELETE Methods
-    //********************
+	//PATCH Methods
+	//********************
+	
+	//PATCH: localhost:***/LifeSigns/user/update
+	//Include changes in the request body as a User object
+	//User id and updated fields must be included, other fields can be left blank or null
+	@PatchMapping("/user/update")
+	public ResponseEntity<Object> patchUser(@RequestBody User user) {
+		if (uServ.getUserByUserId(user.getUserid()) == null) {
+			return new ResponseEntity<>("User with id " + user.getUserid() + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		User oldUser = uServ.getUserByUserId(user.getUserid());
+		uServ.updateUser(oldUser, user);
+		return new ResponseEntity<>(uServ.getUserByUserId(user.getUserid()), HttpStatus.ACCEPTED);
+	}
+	
+	//PATCH: localhost:***/LifeSigns/user/update
+	//Include changes in the request body as a PatientChart object
+	//Chart id and updated fields must be included, other fields can be left blank or null
+	@PatchMapping("chart/update")
+	public ResponseEntity<Object> patchChart(@RequestBody PatientChart chart) {
+		if (pcServ.getChartByChartId(chart.getChartid()) == null) {
+			return new ResponseEntity<>("Chart with id " + chart.getChartid() + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		PatientChart oldChart = pcServ.getChartByChartId(chart.getChartid());
+		pcServ.updateChart(oldChart, chart);
+		return new ResponseEntity<>(pcServ.getChartByChartId(chart.getChartid()), HttpStatus.ACCEPTED);
+	}
+	
+	//********************
+	//DELETE Methods
+	//********************
 	
 	@DeleteMapping("/user/id/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable("id") int userid) {
@@ -205,8 +244,8 @@ public class FrontController {
 	}
 	
 	//********************
-    //for testing purposes
-    //********************
+	//for testing purposes
+	//********************
 	
 //	@GetMapping("/user/initial")
 //	public ResponseEntity<List<User>> insertInitialUsers() {
