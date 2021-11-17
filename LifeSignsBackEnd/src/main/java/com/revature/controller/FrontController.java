@@ -1,6 +1,7 @@
 package com.revature.controller;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,8 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.revature.model.Photo;
 import com.revature.model.User;
 import com.revature.service.PhotoService;
-
+import com.revature.model.CovidSurvey;
 import com.revature.model.PatientChart;
+import com.revature.service.CovidSurveyService;
 import com.revature.service.PatientChartService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
@@ -37,17 +39,19 @@ import com.revature.util.BcryptPasswordEncoder;
 public class FrontController {
 	private UserService uServ;
 	private PatientChartService pcServ;
+	private CovidSurveyService csServ;
 
 	private PhotoService pServ;
 	private PasswordEncoder passwordEncoder;
 	
     @Autowired
-    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ) {
+    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ, CovidSurveyService csServ) {
         super();
         this.uServ = uServ;
         this.pcServ = pcServ;
         this.passwordEncoder = BCryptHasher.getPasswordEncoder();
         this.pServ = pServ;
+        this.csServ = csServ;
     }
     
     //POST: localhost:***/LifeSigns/login
@@ -121,6 +125,31 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.OK);
 	}
 	
+	@GetMapping("/survey")
+	public ResponseEntity<List<CovidSurvey>> getAllSurveys() {
+		return new ResponseEntity<List<CovidSurvey>>(csServ.getAllSurveys(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/survey/id/{id}")
+	public ResponseEntity<CovidSurvey> getSurveyBySurveyId(@PathVariable("id") int surveyId) {
+		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
+		if(survey == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(survey, HttpStatus.OK);
+	}
+	
+	@GetMapping("/survey/userid/{userid}")
+	public ResponseEntity<List<CovidSurvey>> getSurveysByUserId(@PathVariable("userid") int userId) {
+		List<CovidSurvey> surveyList = csServ.getSurveysByUserId(userId);
+		if(surveyList == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<CovidSurvey>>(surveyList, HttpStatus.OK);
+	}
+	
+	
+	
 	//********************
     //POST Methods
     //********************
@@ -182,6 +211,15 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.ACCEPTED);
 	}
 	
+	@PostMapping("/survey/insert")
+	public ResponseEntity<Object> insertSurvey(@RequestBody CovidSurvey survey) {
+		if(csServ.getSurveyBySurveyId(survey.getSurveyId()) != null) {
+			return new ResponseEntity<>("Survey with id " + survey.getSurveyId() + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		csServ.insertSurvey(survey);
+		return new ResponseEntity<>(survey, HttpStatus.ACCEPTED);
+	}
+	
 	//********************
     //DELETE Methods
     //********************
@@ -204,6 +242,16 @@ public class FrontController {
 		return new ResponseEntity<>("Chart with id " + chartid + " deleted.", HttpStatus.ACCEPTED);
 	}
 	
+	@DeleteMapping("/survey/id/{id}")
+	public ResponseEntity<String> deleteSurvey(@PathVariable("id") int surveyId) {
+		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
+		if(survey == null) {
+			return new ResponseEntity<>("Survey with id " + surveyId + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		csServ.deleteSurvey(survey);
+		return new ResponseEntity<>("Survey with id " + surveyId + " deleted.", HttpStatus.ACCEPTED);
+	}
+
 	//********************
     //for testing purposes
     //********************
@@ -230,5 +278,6 @@ public class FrontController {
 //		}
 //		return new ResponseEntity<>(chartList, HttpStatus.CREATED);
 //	}
-
 }
+
+
