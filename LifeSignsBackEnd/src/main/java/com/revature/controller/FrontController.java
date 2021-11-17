@@ -135,6 +135,17 @@ public class FrontController {
 		return new ResponseEntity<>(units, HttpStatus.OK);
 	}
 	
+	@GetMapping("/admin/assigned-unit/{id}")
+	public ResponseEntity<Object> getAssignedUnitByUserId(@PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment == null)
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		return new ResponseEntity<>(assignment.getUnit(), HttpStatus.OK);
+	}
+	
 	//********************
     //POST Methods
     //********************
@@ -197,11 +208,11 @@ public class FrontController {
 	}
 	
 	@PostMapping("/admin/assign-units/{id}")
-	public ResponseEntity<Object> insertOrUpdateUnitAssignment(@RequestBody Unit unit, @PathVariable("id") int userid){
-		User user = uServ.getUserByUserId(userid);
+	public ResponseEntity<Object> insertOrUpdateUnitAssignment(@RequestBody Unit unit, @PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
 		if (user == null) 
 			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-		System.out.println(unit);
+
 		Unit foundUnit = unitServ.getUnitByName(unit.getUnit());	
 		if(foundUnit == null)
 			return new ResponseEntity<>("Unit not found", HttpStatus.NOT_FOUND);
