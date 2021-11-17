@@ -106,9 +106,7 @@ public class UserService {
 		if (changes.getAboutMe() != null && !changes.getAboutMe().isEmpty()) {
 			user.setAboutMe(changes.getAboutMe());
 		}
-		if (changes.isViewPreference() != false) {
-			user.setViewPreference(changes.isViewPreference());
-		}
+		user.setViewPreference(changes.isViewPreference());
 		if (changes.getCovidStatus() != null && !changes.getCovidStatus().isEmpty()) {
 			user.setCovidStatus(changes.getCovidStatus());
 		}
