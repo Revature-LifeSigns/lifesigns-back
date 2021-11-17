@@ -1,6 +1,9 @@
 package com.revature.controller;
 
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -12,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,10 +24,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.revature.model.Photo;
+import com.revature.model.User;
+import com.revature.service.PhotoService;
+import com.revature.model.CovidSurvey;
 import com.revature.model.PatientChart;
+import com.revature.service.CovidSurveyService;
+
+import com.revature.model.PatientChart;
+import com.revature.model.Unit;
+import com.revature.model.UnitAssignment;
 import com.revature.model.User;
 import com.revature.service.PatientChartService;
 import com.revature.service.PhotoService;
+import com.revature.service.UnitAssignmentService;
+import com.revature.service.UnitService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
@@ -33,17 +48,24 @@ import com.revature.util.BcryptPasswordEncoder;
 public class FrontController {
 	private UserService uServ;
 	private PatientChartService pcServ;
+	private CovidSurveyService csServ;
 
 	private PhotoService pServ;
 	private PasswordEncoder passwordEncoder;
 	
-    @Autowired
-    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ) {
+	private UnitService unitServ;
+	private UnitAssignmentService uaServ;
+	
+@Autowired
+    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ, CovidSurveyService csServ, UnitService unitServ, UnitAssignmentService uaServ) {
         super();
         this.uServ = uServ;
         this.pcServ = pcServ;
         this.passwordEncoder = BCryptHasher.getPasswordEncoder();
         this.pServ = pServ;
+        this.csServ = csServ;
+        this.unitServ = unitServ;
+        this.uaServ = uaServ;
     }
     
     //POST: localhost:***/LifeSigns/login
@@ -111,15 +133,17 @@ public class FrontController {
         return new ResponseEntity < > (returnedUser, HttpStatus.OK); //200, OK
     }
     
-    //********************
-    //GET Methods
-    //********************
+	//********************
+	//GET Methods
+	//********************
     
+	//GET: localhost:***/LifeSigns/user
 	@GetMapping("/user")
 	public ResponseEntity<List<User>> getAllUsers() {
 		return new ResponseEntity<List<User>>(uServ.getAllUsers(), HttpStatus.OK);
 	}
     
+	//GET: localhost:***/LifeSigns/user/id/{id}
 	@GetMapping("/user/id/{id}")
 	public ResponseEntity<User> getUserByUserId(@PathVariable("id") int userid) {
 		User user = uServ.getUserByUserId(userid);
@@ -129,6 +153,7 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
+	//GET: localhost:***/LifeSigns/user/username/{username}
 	@GetMapping("/user/username/{username}")
 	public ResponseEntity<User> getUserByUsername(@PathVariable("username") String username) {
 		User user = uServ.getUserByUsername(username);
@@ -138,11 +163,18 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
+	@GetMapping("/photo/{id}")
+	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")int id) {
+		return new ResponseEntity<Photo>(pServ.getProfilePhoto(id), HttpStatus.OK);
+	}
+	
+  //GET: localhost:***/LifeSigns/chart
 	@GetMapping("/chart")
 	public ResponseEntity<List<PatientChart>> getAllCharts() {
 		return new ResponseEntity<List<PatientChart>>(pcServ.getAllCharts(), HttpStatus.OK);
 	}
 	
+	//GET: localhost:***/LifeSigns/chart/id/{id}
 	@GetMapping("/chart/id/{id}")
 	public ResponseEntity<PatientChart> getChartByChartId(@PathVariable("id") int chartid) {
 		PatientChart chart = pcServ.getChartByChartId(chartid);
@@ -152,10 +184,55 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.OK);
 	}
 	
-	//********************
-    //POST Methods
-    //********************
+	@GetMapping("/survey")
+	public ResponseEntity<List<CovidSurvey>> getAllSurveys() {
+		return new ResponseEntity<List<CovidSurvey>>(csServ.getAllSurveys(), HttpStatus.OK);
+	}
 	
+	@GetMapping("/survey/id/{id}")
+	public ResponseEntity<CovidSurvey> getSurveyBySurveyId(@PathVariable("id") int surveyId) {
+		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
+		if(survey == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(survey, HttpStatus.OK);
+	}
+	
+	@GetMapping("/survey/userid/{userid}")
+	public ResponseEntity<List<CovidSurvey>> getSurveysByUserId(@PathVariable("userid") int userId) {
+		List<CovidSurvey> surveyList = csServ.getSurveysByUserId(userId);
+		if(surveyList == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<CovidSurvey>>(surveyList, HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/admin/units")
+	public ResponseEntity<List<Unit>> getHospitalUnits(){
+		List<Unit> units = unitServ.getAllUnits();
+		if(units == null)
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(units, HttpStatus.OK);
+	}
+	
+	@GetMapping("/admin/assigned-unit/{id}")
+	public ResponseEntity<Object> getAssignedUnitByUserId(@PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment == null)
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		return new ResponseEntity<>(assignment.getUnit(), HttpStatus.OK);
+	}
+	
+	//********************
+	//POST Methods
+	//********************
+	
+	//POST: localhost:***/LifeSigns/user/insert
+	//Include user in the request body
 	@PostMapping("/user/insert")
 	public ResponseEntity<Object> insertUser(@RequestBody User user) {
 		if (uServ.getUserByUserId(user.getUserid()) != null) {
@@ -173,28 +250,32 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 	
+	//POST: localhost:***/LifeSigns/user/update
+	//Deprecated, use patch method instead
 	@PostMapping("/user/update")
 	public ResponseEntity<Object> updateUser(@RequestBody User user) {
 		if (uServ.getUserByUserId(user.getUserid()) == null) {
 			return new ResponseEntity<>("User with id " + user.getUserid() + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
-		uServ.insertUser(user);	
+		uServ.insertUser(user);
 		return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
 	}
 	
 	//POST: localhost:***/LifeSigns/photo
-    //Include the photo file in the request body.
-	 @PostMapping(
-	            path = "/photo",
-	            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-	            produces = MediaType.APPLICATION_JSON_VALUE
-	    )    
-	    public ResponseEntity<String> savePhoto(
-	                                         @RequestParam("file") MultipartFile file, @RequestParam("uploader") int uploader){
-		 pServ.savePhoto(file, uploader);
-		 return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
-	    }
+	//Include the photo file in the request body.
+	@PostMapping(
+			path = "/photo",
+			consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE
+		)    
+		public ResponseEntity<String> savePhoto(
+				@RequestParam("file") MultipartFile file, @RequestParam("uploader") int uploader){
+			pServ.savePhoto(file, uploader);
+			return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
+	}
 
+	//POST: localhost:***/LifeSigns/chart/insert
+	//Include chart in the request body
 	@PostMapping("/chart/insert")
 	public ResponseEntity<Object> insertChart(@RequestBody PatientChart chart) {
 		if (pcServ.getChartByChartId(chart.getChartid()) != null) {
@@ -204,6 +285,8 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.CREATED);
 	}
 	
+	//POST: localhost:***/LifeSigns/chart/update
+	//Deprecated, use patch method instead
 	@PostMapping("/chart/update")
 	public ResponseEntity<Object> updateChart(@RequestBody PatientChart chart) {
 		if (pcServ.getChartByChartId(chart.getChartid()) == null) {
@@ -213,9 +296,72 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.ACCEPTED);
 	}
 	
+
+	@PostMapping("/survey/insert")
+	public ResponseEntity<Object> insertSurvey(@RequestBody CovidSurvey survey) {
+		if(csServ.getSurveyBySurveyId(survey.getSurveyId()) != null) {
+			return new ResponseEntity<>("Survey with id " + survey.getSurveyId() + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		csServ.insertSurvey(survey);
+		return new ResponseEntity<>(survey, HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("/admin/assign-units/{id}")
+	public ResponseEntity<Object> insertOrUpdateUnitAssignment(@RequestBody Unit unit, @PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+
+		Unit foundUnit = unitServ.getUnitByName(unit.getUnit());	
+		if(foundUnit == null)
+			return new ResponseEntity<>("Unit not found", HttpStatus.NOT_FOUND);
+		
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment != null) {
+			assignment.setUnit(foundUnit);
+			uaServ.updateUnitAssignment(assignment);
+		}else {
+			UnitAssignment newAssignment = new UnitAssignment(user, foundUnit);
+			uaServ.insertUnitAssignment(newAssignment);
+		}
+		List<UnitAssignment> uaList = uaServ.getAllAssignments();
+		return new ResponseEntity<>(uaList, HttpStatus.OK);
+			
+	}
+	
 	//********************
-    //DELETE Methods
-    //********************
+	//PATCH Methods
+	//********************
+	
+	//PATCH: localhost:***/LifeSigns/user/update
+	//Include changes in the request body as a User object
+	//User id and updated fields must be included, other fields can be left blank or null
+	@PatchMapping("/user/update")
+	public ResponseEntity<Object> patchUser(@RequestBody User user) {
+		if (uServ.getUserByUserId(user.getUserid()) == null) {
+			return new ResponseEntity<>("User with id " + user.getUserid() + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		User oldUser = uServ.getUserByUserId(user.getUserid());
+		uServ.updateUser(oldUser, user);
+		return new ResponseEntity<>(uServ.getUserByUserId(user.getUserid()), HttpStatus.ACCEPTED);
+	}
+	
+	//PATCH: localhost:***/LifeSigns/user/update
+	//Include changes in the request body as a PatientChart object
+	//Chart id and updated fields must be included, other fields can be left blank or null
+	@PatchMapping("chart/update")
+	public ResponseEntity<Object> patchChart(@RequestBody PatientChart chart) {
+		if (pcServ.getChartByChartId(chart.getChartid()) == null) {
+			return new ResponseEntity<>("Chart with id " + chart.getChartid() + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		PatientChart oldChart = pcServ.getChartByChartId(chart.getChartid());
+		pcServ.updateChart(oldChart, chart);
+		return new ResponseEntity<>(pcServ.getChartByChartId(chart.getChartid()), HttpStatus.ACCEPTED);
+	}
+	
+	//********************
+	//DELETE Methods
+	//********************
 	
 	@DeleteMapping("/user/id/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable("id") int userid) {
@@ -235,9 +381,32 @@ public class FrontController {
 		return new ResponseEntity<>("Chart with id " + chartid + " deleted.", HttpStatus.ACCEPTED);
 	}
 	
+	@DeleteMapping("/survey/id/{id}")
+	public ResponseEntity<String> deleteSurvey(@PathVariable("id") int surveyId) {
+		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
+		if(survey == null) {
+			return new ResponseEntity<>("Survey with id " + surveyId + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		csServ.deleteSurvey(survey);
+		return new ResponseEntity<>("Survey with id " + surveyId + " deleted.", HttpStatus.ACCEPTED);
+	}
+
 	//********************
-    //for testing purposes
+    //For Initialization Purporses
     //********************
+	
+	@GetMapping("/units/initialize")
+	public ResponseEntity<List<Unit>> insertInitialUnits(){
+		List<Unit> unitList = new ArrayList<>(Arrays.asList(new Unit("Main Floor"), new Unit("Trauma"), new Unit("ER"), new Unit("Physical Therapy"), new Unit("ICU"), new Unit("Hospice Care"), new Unit("Surgery"), new Unit("Rehabilitation")));
+		for(Unit unit: unitList) {
+			unitServ.insertUnit(unit);
+		}
+		return new ResponseEntity<List<Unit>>(unitList, HttpStatus.CREATED);
+	}
+	
+	//********************
+	//for testing purposes
+	//********************
 	
 //	@GetMapping("/user/initial")
 //	public ResponseEntity<List<User>> insertInitialUsers() {
@@ -261,5 +430,6 @@ public class FrontController {
 //		}
 //		return new ResponseEntity<>(chartList, HttpStatus.CREATED);
 //	}
-
 }
+
+

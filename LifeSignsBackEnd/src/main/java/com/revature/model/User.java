@@ -67,7 +67,7 @@ public class User {
 	private boolean viewPreference;
 	
 	@Column(name="covid_status")
-	private String covid_status;
+	private String covidStatus;
 
 //	public User(String role, String username, String password, String email, String firstName, String lastName,
 //			LocalDate dob, Boolean viewPreference) {
@@ -123,6 +123,6 @@ public class User {
 		this.specialty = specialty;
 		this.aboutMe = aboutMe;
 		this.viewPreference = viewPreference;
-		this.covid_status = covid_status;
+		this.covidStatus = covid_status;
 	}
 }
