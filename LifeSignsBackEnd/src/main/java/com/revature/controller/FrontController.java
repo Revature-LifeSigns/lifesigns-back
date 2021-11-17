@@ -55,7 +55,7 @@ public class FrontController {
 	private UnitService unitServ;
 	private UnitAssignmentService uaServ;
 	
-
+@Autowired
     public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ, CovidSurveyService csServ, UnitService unitServ, UnitAssignmentService uaServ) {
         super();
         this.uServ = uServ;
@@ -75,12 +75,12 @@ public class FrontController {
         // Then the database should have the BCrypt hashed version of the password and we'll check those.
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser == null) {
-            return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+            return new ResponseEntity < > ("No valid user with username", HttpStatus.UNAUTHORIZED);
         }
         if (passwordEncoder.matches(userMap.get("password"), returnedUser.getPassword())) {
-            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.ACCEPTED);
+            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.OK);
         }
-        return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+        return new ResponseEntity < > ("Invalid login", HttpStatus.UNAUTHORIZED);
     }
 
     //POST: localhost:***/LifeSigns/register
@@ -89,12 +89,47 @@ public class FrontController {
     public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser != null)
-            return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
-        //using the constructor User(int roleID, String username, String password, String email)
-        //User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
-        User newUser = new User("nurse", userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+            return new ResponseEntity < > ("Username is taken", HttpStatus.CONFLICT); //409, conflict because already exists
+        returnedUser = uServ.getUserByEmail(userMap.get("email"));
+        if (returnedUser != null)
+            return new ResponseEntity < > ("Email is taken", HttpStatus.CONFLICT); //409, conflict because already exists
+        // Using registration constructor 
+        User newUser = new User(userMap.get("role"), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), 
+        		userMap.get("email"), userMap.get("firstname"), userMap.get("lastname"), LocalDate.parse(userMap.get("dob")), 
+        		userMap.get("address"));
+        
+// DON'T DELETE THIS. WILL USE THIS FOR ACCOUNT DETAILS LATER.      
+//        User newUser = new User();
+//        newUser.setRole(userMap.get("role"));
+//        newUser.setUsername(userMap.get("username"));
+//        newUser.setPassword(passwordEncoder.encode(userMap.get("password")));
+//        newUser.setEmail(userMap.get("email"));
+//        newUser.setFirstName(userMap.get("firstName"));
+//        newUser.setLastName(userMap.get("lastName"));
+//        newUser.setDob(LocalDate.parse(userMap.get("dob")));
+//        newUser.setAddress(userMap.get("address"));
+//        newUser.setAboutMe(userMap.get("aboutMe"));
+//        newUser.setViewPreference(Boolean.valueOf(userMap.getOrDefault("viewPreference","false")));
+//        newUser.setCovid_status(userMap.get("covid_status"));
+        
         uServ.insertUser(newUser);
-        return new ResponseEntity < > (newUser, HttpStatus.ACCEPTED);
+        return new ResponseEntity < > (newUser, HttpStatus.CREATED); //201, created because user created
+    }
+
+    //POST: localhost:***/LifeSigns/changePassword
+    //Include user in JSON format in the request body, expecting username, currentPassword, and newPassword.
+    @PostMapping(value = "/changePassword")
+    public ResponseEntity < Object > changePassword(@RequestBody LinkedHashMap < String, String > userMap) {
+        User returnedUser = uServ.getUserByUsername(userMap.get("username"));
+        if (returnedUser == null)
+            return new ResponseEntity < > ("Username doesn't exist", HttpStatus.CONFLICT); //409, conflict, how did we get here with invalid username?
+        //using the constructor User(int roleID, String username, String password, String email)
+        if (!passwordEncoder.matches(userMap.get("currentPassword"), returnedUser.getPassword())) {
+            return new ResponseEntity < > ("Username doesn't exist", HttpStatus.UNAUTHORIZED); //401, because user+currentpw is incorrect
+        }
+        returnedUser.setPassword(passwordEncoder.encode(userMap.get("newPassword")));
+        uServ.insertUser(returnedUser); //says insertUser but it will update the current user
+        return new ResponseEntity < > (returnedUser, HttpStatus.OK); //200, OK
     }
     
     //********************
