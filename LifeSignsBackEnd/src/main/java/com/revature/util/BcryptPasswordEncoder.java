@@ -38,4 +38,8 @@ public class BcryptPasswordEncoder { // Note the uncapitalized 'c' means it's ou
 	public String encode(String password) {
 		return passwordEncoder.encode(password);
 	}
+
+	public Boolean matches(String rawPassword, String storedPassword) {
+		return passwordEncoder.matches(rawPassword, this.encode(storedPassword));
+	}
 }
