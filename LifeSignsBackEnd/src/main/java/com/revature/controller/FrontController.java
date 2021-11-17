@@ -1,8 +1,8 @@
 package com.revature.controller;
 
 import java.time.LocalDate;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -29,7 +29,15 @@ import com.revature.service.PhotoService;
 import com.revature.model.CovidSurvey;
 import com.revature.model.PatientChart;
 import com.revature.service.CovidSurveyService;
+
+import com.revature.model.PatientChart;
+import com.revature.model.Unit;
+import com.revature.model.UnitAssignment;
+import com.revature.model.User;
 import com.revature.service.PatientChartService;
+import com.revature.service.PhotoService;
+import com.revature.service.UnitAssignmentService;
+import com.revature.service.UnitService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
@@ -44,14 +52,19 @@ public class FrontController {
 	private PhotoService pServ;
 	private PasswordEncoder passwordEncoder;
 	
-    @Autowired
-    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ, CovidSurveyService csServ) {
+	private UnitService unitServ;
+	private UnitAssignmentService uaServ;
+	
+
+    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ, CovidSurveyService csServ, UnitService unitServ, UnitAssignmentService uaServ) {
         super();
         this.uServ = uServ;
         this.pcServ = pcServ;
         this.passwordEncoder = BCryptHasher.getPasswordEncoder();
         this.pServ = pServ;
         this.csServ = csServ;
+        this.unitServ = unitServ;
+        this.uaServ = uaServ;
     }
     
     //POST: localhost:***/LifeSigns/login
@@ -154,6 +167,24 @@ public class FrontController {
 	}
 	
 	
+	@GetMapping("/admin/units")
+	public ResponseEntity<List<Unit>> getHospitalUnits(){
+		List<Unit> units = unitServ.getAllUnits();
+		if(units == null)
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(units, HttpStatus.OK);
+	}
+	
+	@GetMapping("/admin/assigned-unit/{id}")
+	public ResponseEntity<Object> getAssignedUnitByUserId(@PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment == null)
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		return new ResponseEntity<>(assignment.getUnit(), HttpStatus.OK);
+	}
 	
 	//********************
     //POST Methods
@@ -216,6 +247,7 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.ACCEPTED);
 	}
 	
+
 	@PostMapping("/survey/insert")
 	public ResponseEntity<Object> insertSurvey(@RequestBody CovidSurvey survey) {
 		if(csServ.getSurveyBySurveyId(survey.getSurveyId()) != null) {
@@ -223,6 +255,29 @@ public class FrontController {
 		}
 		csServ.insertSurvey(survey);
 		return new ResponseEntity<>(survey, HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("/admin/assign-units/{id}")
+	public ResponseEntity<Object> insertOrUpdateUnitAssignment(@RequestBody Unit unit, @PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+
+		Unit foundUnit = unitServ.getUnitByName(unit.getUnit());	
+		if(foundUnit == null)
+			return new ResponseEntity<>("Unit not found", HttpStatus.NOT_FOUND);
+		
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment != null) {
+			assignment.setUnit(foundUnit);
+			uaServ.updateUnitAssignment(assignment);
+		}else {
+			UnitAssignment newAssignment = new UnitAssignment(user, foundUnit);
+			uaServ.insertUnitAssignment(newAssignment);
+		}
+		List<UnitAssignment> uaList = uaServ.getAllAssignments();
+		return new ResponseEntity<>(uaList, HttpStatus.OK);
+			
 	}
 	
 	//********************
@@ -257,6 +312,19 @@ public class FrontController {
 		return new ResponseEntity<>("Survey with id " + surveyId + " deleted.", HttpStatus.ACCEPTED);
 	}
 
+	//********************
+    //For Initialization Purporses
+    //********************
+	
+	@GetMapping("/units/initialize")
+	public ResponseEntity<List<Unit>> insertInitialUnits(){
+		List<Unit> unitList = new ArrayList<>(Arrays.asList(new Unit("Main Floor"), new Unit("Trauma"), new Unit("ER"), new Unit("Physical Therapy"), new Unit("ICU"), new Unit("Hospice Care"), new Unit("Surgery"), new Unit("Rehabilitation")));
+		for(Unit unit: unitList) {
+			unitServ.insertUnit(unit);
+		}
+		return new ResponseEntity<List<Unit>>(unitList, HttpStatus.CREATED);
+	}
+	
 	//********************
     //for testing purposes
     //********************
