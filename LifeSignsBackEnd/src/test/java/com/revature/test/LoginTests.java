@@ -45,16 +45,22 @@ class LoginTests {
     // the controller. It will turn the map into a JSON which is how the front end sends the back end information.
 	Map<String, String> expectedInputJSON = new HashMap<>();
 	
+	//raw password which we'll need to access in some tests
+	String rawPassword;
+	
     @BeforeEach
     public void setUp() throws Exception{
 		this.mockMvc = webAppContextSetup(context).build();
-		String rawPassword = "password1";
+		rawPassword = "password1";
 		String encodedPassword = passwordEncoder.encode(rawPassword);
 		
 		expectedInputJSON.put("username", "user1");
 		expectedInputJSON.put("password", rawPassword);
 		expectedInputJSON.put("email", "user@gmail.com");
 		expectedInputJSON.put("roleID", "0");
+		expectedInputJSON.put("firstName", "first_name");
+		expectedInputJSON.put("lastName", "last_name");
+		expectedInputJSON.put("dob", "1969-04-20");
 		
         databaseUser = new User("nurse", "user1",encodedPassword,"user@gmail.com");
     }
@@ -141,6 +147,49 @@ class LoginTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
     			.andExpect(status().isMethodNotAllowed());
+    }
+    
+    @Test 
+    public void changePasswordConflictIfNoUser() throws Exception{
+        when(uServ.getUserByUsername("user1")).thenReturn(null);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/changePassword")
+				.content(asJSONString(expectedInputJSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isConflict());
+    }
+    
+    @Test 
+    public void changePasswordUnauthorizedIfWrongPassword() throws Exception{
+        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
+        expectedInputJSON.put("currentPassword", expectedInputJSON.get("password")+"i'm a wrong password");
+        expectedInputJSON.put("newPassword", expectedInputJSON.get("password")+"new password");
+        System.out.println(expectedInputJSON);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/changePassword")
+				.content(asJSONString(expectedInputJSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isUnauthorized());
+    }
+    
+    @Test 
+    public void changePasswordDidChangePassword() throws Exception{
+        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
+        expectedInputJSON.put("currentPassword", rawPassword);
+        String newRawPassword = rawPassword+"newPasswordAppended";
+        expectedInputJSON.put("newPassword", newRawPassword);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/changePassword")
+				.content(asJSONString(expectedInputJSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk());
+        // the below will essentially always pass. Must test the userService method to test if password
+        // actually changed. I put this below if future code people want to actually test the userservice 
+        // from this test method (but then it wouldn't be a unit test)
+        databaseUser.setPassword(passwordEncoder.encode(newRawPassword));
+        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
+        User updatedPasswordUser = uServ.getUserByUsername("user1");
+        assertThat(passwordEncoder.matches(rawPassword,updatedPasswordUser.getPassword())).isFalse();
     }
     
 	public static String asJSONString(final Object obj) {

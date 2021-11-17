@@ -1,5 +1,6 @@
 package com.revature.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,9 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	public List<User> findByLastName(String lastName);
 	public User findByEmail(String email);
 	public User findByUserid(int userid);
+	public User findByDob(LocalDate dob);
+	public User findByAddress(String address);
+	public User findByCovidStatus(String covid_status);
 
 	
 }

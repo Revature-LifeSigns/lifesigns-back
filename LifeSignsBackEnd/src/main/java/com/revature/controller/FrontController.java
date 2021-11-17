@@ -2,6 +2,7 @@ package com.revature.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -25,9 +26,18 @@ import org.springframework.web.multipart.MultipartFile;
 import com.revature.model.Photo;
 import com.revature.model.User;
 import com.revature.service.PhotoService;
+import com.revature.model.CovidSurvey;
+import com.revature.model.PatientChart;
+import com.revature.service.CovidSurveyService;
 
 import com.revature.model.PatientChart;
+import com.revature.model.Unit;
+import com.revature.model.UnitAssignment;
+import com.revature.model.User;
 import com.revature.service.PatientChartService;
+import com.revature.service.PhotoService;
+import com.revature.service.UnitAssignmentService;
+import com.revature.service.UnitService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
@@ -37,17 +47,24 @@ import com.revature.util.BcryptPasswordEncoder;
 public class FrontController {
 	private UserService uServ;
 	private PatientChartService pcServ;
+	private CovidSurveyService csServ;
 
 	private PhotoService pServ;
 	private PasswordEncoder passwordEncoder;
 	
-    @Autowired
-    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ) {
+	private UnitService unitServ;
+	private UnitAssignmentService uaServ;
+	
+@Autowired
+    public FrontController(UserService uServ, PatientChartService pcServ, BcryptPasswordEncoder BCryptHasher, PhotoService pServ, CovidSurveyService csServ, UnitService unitServ, UnitAssignmentService uaServ) {
         super();
         this.uServ = uServ;
         this.pcServ = pcServ;
         this.passwordEncoder = BCryptHasher.getPasswordEncoder();
         this.pServ = pServ;
+        this.csServ = csServ;
+        this.unitServ = unitServ;
+        this.uaServ = uaServ;
     }
     
     //POST: localhost:***/LifeSigns/login
@@ -58,12 +75,12 @@ public class FrontController {
         // Then the database should have the BCrypt hashed version of the password and we'll check those.
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser == null) {
-            return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+            return new ResponseEntity < > ("No valid user with username", HttpStatus.UNAUTHORIZED);
         }
         if (passwordEncoder.matches(userMap.get("password"), returnedUser.getPassword())) {
-            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.ACCEPTED);
+            return new ResponseEntity < > (uServ.getUserByUsername(userMap.get("username")), HttpStatus.OK);
         }
-        return new ResponseEntity < > ("Invalid login", HttpStatus.FORBIDDEN);
+        return new ResponseEntity < > ("Invalid login", HttpStatus.UNAUTHORIZED);
     }
 
     //POST: localhost:***/LifeSigns/register
@@ -72,12 +89,47 @@ public class FrontController {
     public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser != null)
-            return new ResponseEntity < > ("Username is taken", HttpStatus.FORBIDDEN);
-        //using the constructor User(int roleID, String username, String password, String email)
-        //User newUser = new User(Integer.parseInt(userMap.get("roleID")), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
-        User newUser = new User("nurse", userMap.get("username"), passwordEncoder.encode(userMap.get("password")), userMap.get("email"));
+            return new ResponseEntity < > ("Username is taken", HttpStatus.CONFLICT); //409, conflict because already exists
+        returnedUser = uServ.getUserByEmail(userMap.get("email"));
+        if (returnedUser != null)
+            return new ResponseEntity < > ("Email is taken", HttpStatus.CONFLICT); //409, conflict because already exists
+        // Using registration constructor 
+        User newUser = new User(userMap.get("role"), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), 
+        		userMap.get("email"), userMap.get("firstname"), userMap.get("lastname"), LocalDate.parse(userMap.get("dob")), 
+        		userMap.get("address"));
+        
+// DON'T DELETE THIS. WILL USE THIS FOR ACCOUNT DETAILS LATER.      
+//        User newUser = new User();
+//        newUser.setRole(userMap.get("role"));
+//        newUser.setUsername(userMap.get("username"));
+//        newUser.setPassword(passwordEncoder.encode(userMap.get("password")));
+//        newUser.setEmail(userMap.get("email"));
+//        newUser.setFirstName(userMap.get("firstName"));
+//        newUser.setLastName(userMap.get("lastName"));
+//        newUser.setDob(LocalDate.parse(userMap.get("dob")));
+//        newUser.setAddress(userMap.get("address"));
+//        newUser.setAboutMe(userMap.get("aboutMe"));
+//        newUser.setViewPreference(Boolean.valueOf(userMap.getOrDefault("viewPreference","false")));
+//        newUser.setCovid_status(userMap.get("covid_status"));
+        
         uServ.insertUser(newUser);
-        return new ResponseEntity < > (newUser, HttpStatus.ACCEPTED);
+        return new ResponseEntity < > (newUser, HttpStatus.CREATED); //201, created because user created
+    }
+
+    //POST: localhost:***/LifeSigns/changePassword
+    //Include user in JSON format in the request body, expecting username, currentPassword, and newPassword.
+    @PostMapping(value = "/changePassword")
+    public ResponseEntity < Object > changePassword(@RequestBody LinkedHashMap < String, String > userMap) {
+        User returnedUser = uServ.getUserByUsername(userMap.get("username"));
+        if (returnedUser == null)
+            return new ResponseEntity < > ("Username doesn't exist", HttpStatus.CONFLICT); //409, conflict, how did we get here with invalid username?
+        //using the constructor User(int roleID, String username, String password, String email)
+        if (!passwordEncoder.matches(userMap.get("currentPassword"), returnedUser.getPassword())) {
+            return new ResponseEntity < > ("Username doesn't exist", HttpStatus.UNAUTHORIZED); //401, because user+currentpw is incorrect
+        }
+        returnedUser.setPassword(passwordEncoder.encode(userMap.get("newPassword")));
+        uServ.insertUser(returnedUser); //says insertUser but it will update the current user
+        return new ResponseEntity < > (returnedUser, HttpStatus.OK); //200, OK
     }
     
     //********************
@@ -107,6 +159,11 @@ public class FrontController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
+	@GetMapping("/photo/{id}")
+	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")int id) {
+		return new ResponseEntity<Photo>(pServ.getProfilePhoto(id), HttpStatus.OK);
+	}
+	
 	@GetMapping("/chart")
 	public ResponseEntity<List<PatientChart>> getAllCharts() {
 		return new ResponseEntity<List<PatientChart>>(pcServ.getAllCharts(), HttpStatus.OK);
@@ -119,6 +176,49 @@ public class FrontController {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(chart, HttpStatus.OK);
+	}
+	
+	@GetMapping("/survey")
+	public ResponseEntity<List<CovidSurvey>> getAllSurveys() {
+		return new ResponseEntity<List<CovidSurvey>>(csServ.getAllSurveys(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/survey/id/{id}")
+	public ResponseEntity<CovidSurvey> getSurveyBySurveyId(@PathVariable("id") int surveyId) {
+		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
+		if(survey == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(survey, HttpStatus.OK);
+	}
+	
+	@GetMapping("/survey/userid/{userid}")
+	public ResponseEntity<List<CovidSurvey>> getSurveysByUserId(@PathVariable("userid") int userId) {
+		List<CovidSurvey> surveyList = csServ.getSurveysByUserId(userId);
+		if(surveyList == null) {
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<CovidSurvey>>(surveyList, HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/admin/units")
+	public ResponseEntity<List<Unit>> getHospitalUnits(){
+		List<Unit> units = unitServ.getAllUnits();
+		if(units == null)
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(units, HttpStatus.OK);
+	}
+	
+	@GetMapping("/admin/assigned-unit/{id}")
+	public ResponseEntity<Object> getAssignedUnitByUserId(@PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment == null)
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		return new ResponseEntity<>(assignment.getUnit(), HttpStatus.OK);
 	}
 	
 	//********************
@@ -182,6 +282,39 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.ACCEPTED);
 	}
 	
+
+	@PostMapping("/survey/insert")
+	public ResponseEntity<Object> insertSurvey(@RequestBody CovidSurvey survey) {
+		if(csServ.getSurveyBySurveyId(survey.getSurveyId()) != null) {
+			return new ResponseEntity<>("Survey with id " + survey.getSurveyId() + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		csServ.insertSurvey(survey);
+		return new ResponseEntity<>(survey, HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("/admin/assign-units/{id}")
+	public ResponseEntity<Object> insertOrUpdateUnitAssignment(@RequestBody Unit unit, @PathVariable("id") int userId){
+		User user = uServ.getUserByUserId(userId);
+		if (user == null) 
+			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+
+		Unit foundUnit = unitServ.getUnitByName(unit.getUnit());	
+		if(foundUnit == null)
+			return new ResponseEntity<>("Unit not found", HttpStatus.NOT_FOUND);
+		
+		UnitAssignment assignment = uaServ.getAssignedByUser(user);
+		if(assignment != null) {
+			assignment.setUnit(foundUnit);
+			uaServ.updateUnitAssignment(assignment);
+		}else {
+			UnitAssignment newAssignment = new UnitAssignment(user, foundUnit);
+			uaServ.insertUnitAssignment(newAssignment);
+		}
+		List<UnitAssignment> uaList = uaServ.getAllAssignments();
+		return new ResponseEntity<>(uaList, HttpStatus.OK);
+			
+	}
+	
 	//********************
     //DELETE Methods
     //********************
@@ -202,6 +335,29 @@ public class FrontController {
 		}
 		pcServ.deleteChart(pcServ.getChartByChartId(chartid));
 		return new ResponseEntity<>("Chart with id " + chartid + " deleted.", HttpStatus.ACCEPTED);
+	}
+	
+	@DeleteMapping("/survey/id/{id}")
+	public ResponseEntity<String> deleteSurvey(@PathVariable("id") int surveyId) {
+		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
+		if(survey == null) {
+			return new ResponseEntity<>("Survey with id " + surveyId + " doesn't exist.", HttpStatus.FORBIDDEN);
+		}
+		csServ.deleteSurvey(survey);
+		return new ResponseEntity<>("Survey with id " + surveyId + " deleted.", HttpStatus.ACCEPTED);
+	}
+
+	//********************
+    //For Initialization Purporses
+    //********************
+	
+	@GetMapping("/units/initialize")
+	public ResponseEntity<List<Unit>> insertInitialUnits(){
+		List<Unit> unitList = new ArrayList<>(Arrays.asList(new Unit("Main Floor"), new Unit("Trauma"), new Unit("ER"), new Unit("Physical Therapy"), new Unit("ICU"), new Unit("Hospice Care"), new Unit("Surgery"), new Unit("Rehabilitation")));
+		for(Unit unit: unitList) {
+			unitServ.insertUnit(unit);
+		}
+		return new ResponseEntity<List<Unit>>(unitList, HttpStatus.CREATED);
 	}
 	
 	//********************
@@ -230,5 +386,6 @@ public class FrontController {
 //		}
 //		return new ResponseEntity<>(chartList, HttpStatus.CREATED);
 //	}
-
 }
+
+
