@@ -45,10 +45,6 @@ public class UserService {
 	}
 	
 
-	public User getUserByPassword(String password){
-		return uRepo.findByPassword(password);
-	}
-	
 	
 	public User getUserByUsernameAndPassword(String Username, String password) {
 		return uRepo.findByUsernameAndPassword(Username, password);
@@ -68,7 +64,8 @@ public class UserService {
 	
 
 	public User getUserByFirstAndLastname(String firstName, String lastName) {
-		return uRepo.findByFirstAndLastname(firstName, lastName);
+		return uRepo.findByFirstNameAndLastName(firstName, lastName);
+	}
 
 	public User getUserByUserId(int userid) {
 		return uRepo.findByUserid(userid);
