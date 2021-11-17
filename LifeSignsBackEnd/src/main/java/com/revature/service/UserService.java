@@ -80,17 +80,17 @@ public class UserService {
 		if (changes.getAboutMe() != null && !changes.getAboutMe().isEmpty()) {
 			user.setAboutMe(changes.getAboutMe());
 		}
-		if (changes.getViewPreference() != null) {
-			user.setViewPreference(changes.getViewPreference());
+		if (changes.isViewPreference() != false) {
+			user.setViewPreference(changes.isViewPreference());
 		}
-		if (changes.getCovid_status() != null && !changes.getCovid_status().isEmpty()) {
-			user.setCovid_status(changes.getCovid_status());
+		if (changes.getCovidStatus() != null && !changes.getCovidStatus().isEmpty()) {
+			user.setCovidStatus(changes.getCovidStatus());
 		}
 		
 		uRepo.save(user);
 	}
 	
-}
+
 
 	public User getUserByDof(LocalDate dob) {
 		return uRepo.findByDob(dob);
