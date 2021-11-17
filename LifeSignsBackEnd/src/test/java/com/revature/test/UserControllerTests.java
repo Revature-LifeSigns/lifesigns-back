@@ -2,6 +2,7 @@ package com.revature.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -139,10 +140,33 @@ public class UserControllerTests {
 	}
 	
 	@Test
+	public void insertUserReturnForbiddenIfSameEmailExists() throws Exception {
+		when(uServ.getUserByUserId(1)).thenReturn(null);
+		when(uServ.getUserByEmail("user1@email.com")).thenReturn(databaseUser);
+		this.mockMvc.perform(post("/LifeSigns/user/insert")
+			.content(asJSONString(expectedInputJSON))
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void insertUserReturnForbiddenIfSameUsernameExists() throws Exception {
+		when(uServ.getUserByUserId(1)).thenReturn(null);
+		when(uServ.getUserByEmail("user1@email.com")).thenReturn(null);
+		when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
+		this.mockMvc.perform(post("/LifeSigns/user/insert")
+			.content(asJSONString(expectedInputJSON))
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isForbidden());
+	}
+	
+	@Test
 	public void insertUserReturnCreatedIfUserDoesntExist() throws Exception {
 		when(uServ.getUserByUserId(1)).thenReturn(null);
-		when(uServ.getUserByUsername("user1")).thenReturn(null);
 		when(uServ.getUserByEmail("user1@email.com")).thenReturn(null);
+		when(uServ.getUserByUsername("user1")).thenReturn(null);
 		this.mockMvc.perform(post("/LifeSigns/user/insert")
 			.content(asJSONString(expectedInputJSON))
 			.contentType(MediaType.APPLICATION_JSON)
@@ -155,6 +179,20 @@ public class UserControllerTests {
 	public void ensureInsertUserGetDoesntExist() throws Exception {
 		this.mockMvc.perform(get("/LifeSigns/user/insert"))
 			.andExpect(status().isMethodNotAllowed());
+	}
+	
+	@Test
+	public void deleteUserReturnForbiddenIfUserDoesntExist() throws Exception {
+		when(uServ.getUserByUserId(1)).thenReturn(null);
+		this.mockMvc.perform(delete("/LifeSigns/user/id/1"))
+			.andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void deleteUserReturnAcceptedIfUserExists() throws Exception {
+		when(uServ.getUserByUserId(1)).thenReturn(databaseUser);
+		this.mockMvc.perform(delete("/LifeSigns/user/id/1"))
+			.andExpect(status().isAccepted());
 	}
 	
 	public static String asJSONString(final Object obj) {

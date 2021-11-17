@@ -2,6 +2,7 @@ package com.revature.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import java.time.LocalDate;
@@ -30,32 +31,19 @@ public class UserServiceTests {
 	private UserRepository uRepo;
 	
 	private UserService uServ;
-	private User databaseUser, changesUser;
+	private User databaseUser, changesUser, identicalUser;
 	
 	@BeforeEach
 	public void setUp() throws Exception {
 		this.mockMvc = webAppContextSetup(context).build();
 		
-		LocalDate date = LocalDate.now();
 		databaseUser = new User();
-		databaseUser.setUserid(1);
-		databaseUser.setRole("nurse");
-		databaseUser.setUsername("user1");
-		databaseUser.setPassword("p4ssw0rd");
-		databaseUser.setEmail("user1@email.com");
-		databaseUser.setFirstName("user");
-		databaseUser.setLastName("one");
-		databaseUser.setDob(date);
-		databaseUser.setAddress("123 Main St.");
-		databaseUser.setProfile_image(null);
-		databaseUser.setSpecialty("surgery");
-		databaseUser.setAboutMe("hello");
-		databaseUser.setViewPreference(true);
-		databaseUser.setCovidStatus("none");
+		initializeUser(databaseUser);
+		
+		identicalUser = new User();
+		initializeUser(identicalUser);
 		
 		changesUser = new User();
-		changesUser.setUserid(1);
-		changesUser.setViewPreference(true);
 		changesUser.setCovidStatus("yes");
 		uServ = new UserService(uRepo);
 	}
@@ -68,9 +56,35 @@ public class UserServiceTests {
 	@Test
 	public void testUpdateUser() throws Exception {
 		assertEquals(databaseUser.getCovidStatus(), "none");
+		assertEquals(databaseUser, identicalUser);
 		uServ.updateUser(databaseUser, changesUser);
 		assertEquals(databaseUser.getCovidStatus(), "yes");
 		assertEquals(databaseUser.getUsername(), "user1");
+		assertNotEquals(databaseUser, identicalUser);
+	}
+	
+	@Test
+	public void testUpdateUserNoChanges() throws Exception {
+		assertEquals(databaseUser, identicalUser);
+		uServ.updateUser(databaseUser, new User());
+		assertEquals(databaseUser, identicalUser);
+	}
+	
+	private void initializeUser(User user) {
+		user.setUserid(1);
+		user.setRole("nurse");
+		user.setUsername("user1");
+		user.setPassword("p4ssw0rd");
+		user.setEmail("user1@email.com");
+		user.setFirstName("user");
+		user.setLastName("one");
+		user.setDob(LocalDate.parse("1970-01-01"));
+		user.setAddress("123 Main St.");
+		user.setProfile_image(null);
+		user.setSpecialty("surgery");
+		user.setAboutMe("hello");
+		user.setViewPreference(false);
+		user.setCovidStatus("none");
 	}
 	
 }
