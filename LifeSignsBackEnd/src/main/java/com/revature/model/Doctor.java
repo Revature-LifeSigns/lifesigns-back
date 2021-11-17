@@ -109,6 +109,10 @@ public class Doctor {
 		DOB = dOB;
 //		this.user = user;
 	}
+	
+	public Doctor() {
+		
+	}
 
 //	public int getUserId() {
 //		return userId;
