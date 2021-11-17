@@ -4,7 +4,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BcryptPasswordEncoder {
+public class BcryptPasswordEncoder { // Note the uncapitalized 'c' means it's our class
 	BCryptPasswordEncoder passwordEncoder;
 	
 	/*
@@ -22,6 +22,7 @@ public class BcryptPasswordEncoder {
 	$2a$10$Eo5KDPFqxG5ZCGZxocDjZOm.GKXKQ3IMPn21PgVGW8OyDITgF/Aeu=="123" is true
 	$2a$10$uyAWaqMLu/sUDx83MyKlAeAb.OeSXL6pCfj3QLwugUaWb4J1rqcOW=="123" is true
 	* If hackers get into the database, they will receive this jumbled garbage that is extremely hard to decrypt.
+	* You MUST use the .matches function to check for equality.
 	* When using the .matches function, make sure the raw password is the 1st arg and the hashed is 2nd arg
 	* Wikipedia for bcrypt here https://en.wikipedia.org/wiki/Bcrypt
 	*/
@@ -32,5 +33,13 @@ public class BcryptPasswordEncoder {
 
 	public BCryptPasswordEncoder getPasswordEncoder() {
 		return passwordEncoder;
+	}
+
+	public String encode(String password) {
+		return passwordEncoder.encode(password);
+	}
+
+	public Boolean matches(String rawPassword, String storedPassword) {
+		return passwordEncoder.matches(rawPassword, this.encode(storedPassword));
 	}
 }
