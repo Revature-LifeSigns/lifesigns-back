@@ -8,16 +8,20 @@ import org.springframework.stereotype.Repository;
 import com.revature.model.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String>{
+public interface UserRepository extends JpaRepository<User, Integer>{
 	
 	public List<User> findAll();
 	public User findByUsername(String username);
-	public User findByPassword(String password);
-	public User findByUsernameAndPassword(String username, String password);
-	public User findByFirstName(String firstName);
-	public User findByLastName(String lastName);
+	public List<User> findByFirstName(String firstName);
+	public List<User> findByLastName(String lastName);
 	public User findByEmail(String email);
+
 	public User findByRole(String role);
 	public User findByFirstAndLastname(String firstName, String lastName);
+
+	public User findByUserid(int userid);
+	public User findByUsernameAndPassword(String username, String password);
+
+
 	
 }

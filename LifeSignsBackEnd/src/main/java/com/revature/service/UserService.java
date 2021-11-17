@@ -43,6 +43,7 @@ public class UserService {
 		return uRepo.findByUsername(username);
 	}
 	
+
 	public User getUserByPassword(String password){
 		return uRepo.findByPassword(password);
 	}
@@ -58,12 +59,19 @@ public class UserService {
 		return uRepo.findByRole(role);
 	}
 	
+
+
 	public User getUserByEmail(String email){
 		return uRepo.findByEmail(email);
 	}
 	
+
 	public User getUserByFirstAndLastname(String firstName, String lastName) {
 		return uRepo.findByFirstAndLastname(firstName, lastName);
+
+	public User getUserByUserId(int userid) {
+		return uRepo.findByUserid(userid);
+
 	}
 	
 }
