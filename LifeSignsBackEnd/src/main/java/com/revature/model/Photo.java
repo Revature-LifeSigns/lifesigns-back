@@ -1,14 +1,10 @@
 package com.revature.model;
 
-import java.util.Optional;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import org.springframework.beans.factory.annotation.Value;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +23,7 @@ public class Photo {
 	    private int id;
 	    private String imagePath;
 	    private String imageFileName;
-	    @ManyToOne
+	    @OneToOne
 	    @JoinColumn(name = "uploader", nullable=false )
 	    private User uploader;
 	   
