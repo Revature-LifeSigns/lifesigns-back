@@ -44,7 +44,7 @@ public class UserControllerTests {
 	Map<String, Object> expectedInputJSON = new HashMap<>();
 	
 	@BeforeEach
-	public void setUp() throws Exception{
+	public void setUp() throws Exception {
 		this.mockMvc = webAppContextSetup(context).build();
 		
 		LocalDate date = LocalDate.now();
