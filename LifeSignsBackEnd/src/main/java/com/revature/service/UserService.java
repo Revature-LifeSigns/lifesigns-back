@@ -103,6 +103,9 @@ public class UserService {
 		if (changes.getProfile_image() != null) {
 			user.setProfile_image(changes.getProfile_image());
 		}
+		if (changes.getSpecialty() != null && !changes.getSpecialty().isEmpty()) {
+			user.setSpecialty(changes.getSpecialty());
+		}
 		if (changes.getAboutMe() != null && !changes.getAboutMe().isEmpty()) {
 			user.setAboutMe(changes.getAboutMe());
 		}
