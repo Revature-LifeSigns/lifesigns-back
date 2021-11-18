@@ -158,8 +158,9 @@ public class FrontController {
 	}
 	
 	@GetMapping("/photo/{id}")
-	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")int id) {
-		return new ResponseEntity<Photo>(pServ.getProfilePhoto(id), HttpStatus.OK);
+	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")String id) {
+		
+		return new ResponseEntity<Photo>(pServ.getProfilePhoto(Integer.parseInt(id)), HttpStatus.OK);
 	}
 	
   //GET: localhost:***/LifeSigns/chart
