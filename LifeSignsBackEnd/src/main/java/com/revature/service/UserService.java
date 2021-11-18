@@ -24,25 +24,46 @@ public class UserService {
 	public List<User> getAllUsers() {
 		return uRepo.findAll();
 	}
-
-	public void insertUser(User user) {
-		uRepo.save(user);
-	}
-
+	
+    public void insertUser(User user) {
+    	uRepo.save(user);
+    }
+    
 	public void deleteUser(User user) {
 		uRepo.delete(user);
 	}
-
-	public User getUserByUsername(String username) {
+	
+	
+	public User getUserByUsername(String username){
 		return uRepo.findByUsername(username);
 	}
+	
 
-	public User getUserByEmail(String email) {
+	
+	public User getUserByUsernameAndPassword(String Username, String password) {
+		return uRepo.findByUsernameAndPassword(Username, password);
+		
+	}
+	
+	
+	public User getUserByRole(String role) {
+		return uRepo.findByRole(role);
+	}
+	
+
+
+	public User getUserByEmail(String email){
 		return uRepo.findByEmail(email);
+	}
+	
+
+	public User getUserByFirstAndLastname(String firstName, String lastName) {
+		return uRepo.findByFirstNameAndLastName(firstName, lastName);
 	}
 
 	public User getUserByUserId(int userid) {
 		return uRepo.findByUserid(userid);
+
 	}
 	
 	public void updateUser(User user, User changes) {
@@ -73,12 +94,13 @@ public class UserService {
 		if (changes.getProfile_image() != null) {
 			user.setProfile_image(changes.getProfile_image());
 		}
+		if (changes.getSpecialty() != null && !changes.getSpecialty().isEmpty()) {
+			user.setSpecialty(changes.getSpecialty());
+		}
 		if (changes.getAboutMe() != null && !changes.getAboutMe().isEmpty()) {
 			user.setAboutMe(changes.getAboutMe());
 		}
-		if (changes.isViewPreference() != false) {
-			user.setViewPreference(changes.isViewPreference());
-		}
+		user.setViewPreference(changes.isViewPreference());
 		if (changes.getCovidStatus() != null && !changes.getCovidStatus().isEmpty()) {
 			user.setCovidStatus(changes.getCovidStatus());
 		}

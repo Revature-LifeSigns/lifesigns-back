@@ -1,6 +1,7 @@
 package com.revature.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,11 +43,10 @@ import com.revature.service.PatientChartService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(FrontController.class)
-public class ChartTests {
+@SpringBootTest
+public class ChartControllerTests {
 	
-	@Autowired
+	
 	private MockMvc mockMvc;
 	@Autowired 
 	private BcryptPasswordEncoder passwordEncoder;
@@ -56,6 +56,7 @@ public class ChartTests {
 	
 	@MockBean
 	private UserService uServ;
+	@MockBean
 	private PatientChartService pcServ;
 	private User databaseUser;
 	private PatientChart chart;
@@ -65,6 +66,7 @@ public class ChartTests {
 	@BeforeEach
     public void setUp() throws Exception{
 		this.mockMvc = webAppContextSetup(context).build();
+		//PatientChartService pcServ = new PatientChartService();
 		
 		//Building Test PatientChart JSON
 		expectedInputJSON.put("User", "doctor");
@@ -81,6 +83,7 @@ public class ChartTests {
 		expectedInputJSON.put("treatment", "test treatment");
 
 		//Building Test PatientChart Java Object
+		PatientChart chart = new PatientChart();
 		chart.setChartid(1);
 		chart.setDoctor(databaseUser);
 		chart.setNurse(databaseUser);
@@ -111,6 +114,7 @@ public class ChartTests {
 	@Test
 	public void testGetChartByIdSuccess() throws Exception {
 		when(pcServ.getChartByChartId(1)).thenReturn(chart);
+		when(chart.getChartid()).thenReturn(1);
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/LifeSigns/chart/id/" + chart.getChartid())
 				.content(asJSONString(expectedInputJSON))
 				.contentType(MediaType.APPLICATION_JSON)
@@ -143,6 +147,7 @@ public class ChartTests {
 	@Test
 	public void testDeleteChartSuccess() throws Exception {
 		when(pcServ.getChartByChartId(1)).thenReturn(chart);
+		when(chart.getChartid()).thenReturn(1);
 		doNothing().when(pcServ).deleteChart(pcServ.getChartByChartId(1));
 		this.mockMvc.perform(MockMvcRequestBuilders.delete("/LifeSigns/chart/id/" + chart.getChartid())
 				.contentType(MediaType.APPLICATION_JSON))
