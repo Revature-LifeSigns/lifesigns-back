@@ -65,7 +65,8 @@ public class PhotoService {
 	}
 
 	public Photo getProfilePhoto(int userid) {
-		Photo photo = pRepo.findByUploader(userid);
+		User user = uRepo.findByUserid(userid);
+		Photo photo = pRepo.findByUploader(user);
       
         log.info("getProfilePhoto returns the user's photo");
         return photo;
