@@ -55,7 +55,7 @@ public class User {
 	private String address;
 	
     @Column(name="profile_image")
-    private byte[] profile_image;
+    private String profile_image;
     
     @Column(name="specialty")
     private String specialty;
@@ -116,7 +116,7 @@ public class User {
 	}
 	
 	// Used to edit profile
-	public User(String username, byte[] profile_image, String specialty, String aboutMe, boolean viewPreference, String covid_status) {
+	public User(String username, String profile_image, String specialty, String aboutMe, boolean viewPreference, String covid_status) {
 		super();
 		this.username = username;
 		this.profile_image = profile_image;
