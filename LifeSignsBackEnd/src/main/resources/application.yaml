@@ -1,4 +1,4 @@
-#
+
 #server:
 #  port: 9025
 # 
@@ -8,12 +8,12 @@
 #    username: ${LifeSignsDBUsername}
 #    password: ${LifeSignsDBPassword}
 #    driver-class-name: org.postgresql.Driver
-#  jpa:
+#  jpa: 
 #    database-platform: org.hibernate.dialect.PostgreSQLDialect
 #    show-sql: false
 #    hibernate:
 #      ddl-auto: update
-#      
+      
 server:
   port: 9025
  
@@ -23,7 +23,7 @@ spring:
     username: lifesignsuser
     password: P4ssw0rd
     driver-class-name: org.postgresql.Driver
-  jpa: 
+  jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     hibernate:
