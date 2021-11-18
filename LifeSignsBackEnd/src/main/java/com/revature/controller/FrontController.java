@@ -269,8 +269,8 @@ public class FrontController {
 			produces = MediaType.APPLICATION_JSON_VALUE
 		)    
 		public ResponseEntity<String> savePhoto(
-				@RequestParam("file") MultipartFile file, @RequestParam("uploader") int uploader){
-			pServ.savePhoto(file, uploader);
+				@RequestParam("file") MultipartFile file, @RequestParam("uploader") String uploader){
+			pServ.savePhoto(file, Integer.parseInt(uploader));
 			return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
 	}
 
@@ -336,14 +336,14 @@ public class FrontController {
 	//PATCH: localhost:***/LifeSigns/user/update
 	//Include changes in the request body as a User object
 	//User id and updated fields must be included, other fields can be left blank or null
-	@PatchMapping("/user/update")
-	public ResponseEntity<Object> patchUser(@RequestBody User user) {
-		if (uServ.getUserByUserId(user.getUserid()) == null) {
+	@PatchMapping("/user/update/{id}")
+	public ResponseEntity<Object> patchUser(@RequestBody User user, @PathVariable int id) {
+		if (uServ.getUserByUserId(id) == null) {
 			return new ResponseEntity<>("User with id " + user.getUserid() + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
-		User oldUser = uServ.getUserByUserId(user.getUserid());
+		User oldUser = uServ.getUserByUserId(id);
 		uServ.updateUser(oldUser, user);
-		return new ResponseEntity<>(uServ.getUserByUserId(user.getUserid()), HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(uServ.getUserByUserId(id), HttpStatus.ACCEPTED);
 	}
 	
 	//PATCH: localhost:***/LifeSigns/user/update
