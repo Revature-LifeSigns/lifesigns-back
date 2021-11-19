@@ -16,17 +16,12 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	public List<User> findByFirstName(String firstName);
 	public List<User> findByLastName(String lastName);
 	public User findByEmail(String email);
-
 	public User findByRole(String role);
 	public User findByFirstNameAndLastName(String firstName, String lastName);
-
 	public User findByUserid(int userid);
 	public User findByUsernameAndPassword(String username, String password);
-
 	public User findByDob(LocalDate dob);
 	public User findByAddress(String address);
 	public User findByCovidStatus(String covid_status);
-
-
 	
 }
