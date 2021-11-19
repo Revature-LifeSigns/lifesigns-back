@@ -80,56 +80,56 @@ class LoginTests {
  		assertThat(this.mockMvc).isNotNull();
  	}
     
-//    @Test 
-//    public void loginControllerReturnInvalidIfNotFound() throws Exception{
-//        when(uServ.getUserByUsername("ThereIsNoUserWithThisUsername")).thenReturn(null);
-//        this.mockMvc.perform(post("/LifeSigns/login")
-//    		.content(asJSONString(expectedInputJSON))
-//			.contentType(MediaType.APPLICATION_JSON)
-//			.accept(MediaType.APPLICATION_JSON))
-//        	.andExpect(status().isUnauthorized());
-//    }
+    @Test 
+    public void loginControllerReturnInvalidIfNotFound() throws Exception{
+        when(uServ.getUserByUsername("ThereIsNoUserWithThisUsername")).thenReturn(null);
+        this.mockMvc.perform(post("/LifeSigns/login")
+    		.content(asJSONString(expectedInputJSON))
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON))
+        	.andExpect(status().isUnauthorized());
+    }
     
-//    @Test 
-//    public void loginControllerReturnValidIfFound() throws Exception{
-//        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
-//        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/login")
-//				.content(asJSONString(expectedInputJSON))
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.accept(MediaType.APPLICATION_JSON))
-//				.andExpect(status().isOk());
-//    }
-//    
-//    @Test 
-//    public void loginControllerReturnInvalidIfWrongPassword() throws Exception{
-//        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
-//		expectedInputJSON.put("password", "JustPutAWrongPasswordInHere");
-//        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/login")
-//				.content(asJSONString(expectedInputJSON))
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isUnauthorized());
-//    }
-//    
-//    @Test 
-//    public void registerReturnConflictIfDuplicateUsername() throws Exception{
-//        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
-//        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/register")
-//				.content(asJSONString(expectedInputJSON))
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isConflict());
-//    }
-//    
-//    @Test 
-//    public void registerReturnCreatedIfValidUser() throws Exception{
-//        when(uServ.getUserByUsername("user1")).thenReturn(null);
-//        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/register")
-//				.content(asJSONString(expectedInputJSON))
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isCreated());
-//    }
+    @Test 
+    public void loginControllerReturnValidIfFound() throws Exception{
+        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/login")
+				.content(asJSONString(expectedInputJSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+    }
+    
+    @Test 
+    public void loginControllerReturnInvalidIfWrongPassword() throws Exception{
+        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
+		expectedInputJSON.put("password", "JustPutAWrongPasswordInHere");
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/login")
+				.content(asJSONString(expectedInputJSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isUnauthorized());
+    }
+    
+    @Test 
+    public void registerReturnConflictIfDuplicateUsername() throws Exception{
+        when(uServ.getUserByUsername("user1")).thenReturn(databaseUser);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/register")
+				.content(asJSONString(expectedInputJSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isConflict());
+    }
+    
+    @Test 
+    public void registerReturnCreatedIfValidUser() throws Exception{
+        when(uServ.getUserByUsername("user1")).thenReturn(null);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/LifeSigns/register")
+				.content(asJSONString(expectedInputJSON))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isCreated());
+    }
 
     @Test 
     public void ensureRegisterGetDoesntExist() throws Exception{

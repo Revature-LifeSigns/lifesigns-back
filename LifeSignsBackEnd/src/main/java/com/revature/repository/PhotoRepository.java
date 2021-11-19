@@ -9,7 +9,7 @@ import com.revature.model.User;
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, Integer> {
 	
-	Photo findByUploader(int user);
+	Photo findByUploader(User user);
 	void deleteById(int photoId);
 
 
