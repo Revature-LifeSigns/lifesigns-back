@@ -93,25 +93,19 @@ public class FrontController {
             return new ResponseEntity < > ("Username is taken", HttpStatus.CONFLICT); //409, conflict because already exists
         returnedUser = uServ.getUserByEmail(userMap.get("email"));
         if (returnedUser != null)
-            return new ResponseEntity < > ("Email is taken", HttpStatus.CONFLICT); //409, conflict because already exists
-        // Using registration constructor 
-        User newUser = new User(userMap.get("role"), userMap.get("username"), passwordEncoder.encode(userMap.get("password")), 
-        		userMap.get("email"), userMap.get("firstname"), userMap.get("lastname"), LocalDate.parse(userMap.get("dob")), 
-        		userMap.get("address"));
-        
-// DON'T DELETE THIS. WILL USE THIS FOR ACCOUNT DETAILS LATER.      
-//        User newUser = new User();
-//        newUser.setRole(userMap.get("role"));
-//        newUser.setUsername(userMap.get("username"));
-//        newUser.setPassword(passwordEncoder.encode(userMap.get("password")));
-//        newUser.setEmail(userMap.get("email"));
-//        newUser.setFirstName(userMap.get("firstName"));
-//        newUser.setLastName(userMap.get("lastName"));
-//        newUser.setDob(LocalDate.parse(userMap.get("dob")));
-//        newUser.setAddress(userMap.get("address"));
-//        newUser.setAboutMe(userMap.get("aboutMe"));
-//        newUser.setViewPreference(Boolean.valueOf(userMap.getOrDefault("viewPreference","false")));
-//        newUser.setCovid_status(userMap.get("covid_status"));
+            return new ResponseEntity < > ("Email is taken", HttpStatus.CONFLICT); //409, conflict because already exists  
+        User newUser = new User();
+        newUser.setRole(userMap.get("role"));
+        newUser.setUsername(userMap.get("username"));
+        newUser.setPassword(passwordEncoder.encode(userMap.get("password")));
+        newUser.setEmail(userMap.get("email"));
+        newUser.setFirstName(userMap.get("firstname"));
+        newUser.setLastName(userMap.get("lastname"));
+        newUser.setDob(LocalDate.parse(userMap.get("dob")));
+        newUser.setAddress(userMap.get("address"));
+        newUser.setAboutMe(userMap.get("aboutMe"));
+        newUser.setViewPreference(Boolean.valueOf(userMap.getOrDefault("viewPreference","false")));
+        newUser.setCovidStatus(userMap.get("covid_status"));
         
         uServ.insertUser(newUser);
         return new ResponseEntity < > (newUser, HttpStatus.CREATED); //201, created because user created
@@ -164,8 +158,9 @@ public class FrontController {
 	}
 	
 	@GetMapping("/photo/{id}")
-	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")int id) {
-		return new ResponseEntity<Photo>(pServ.getProfilePhoto(id), HttpStatus.OK);
+	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")String id) {
+		
+		return new ResponseEntity<Photo>(pServ.getProfilePhoto(Integer.parseInt(id)), HttpStatus.OK);
 	}
 	
   //GET: localhost:***/LifeSigns/chart
