@@ -1,4 +1,4 @@
-package com.revature.test;
+package com.revature.eval.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;

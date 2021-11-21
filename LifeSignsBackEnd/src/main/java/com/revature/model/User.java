@@ -9,6 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -67,6 +71,7 @@ public class User {
 	
 	@Column(name="covid_status")
 	private String covidStatus;
+	
 
 //	public User(String role, String username, String password, String email, String firstName, String lastName,
 //			LocalDate dob, Boolean viewPreference) {
@@ -124,4 +129,12 @@ public class User {
 		this.viewPreference = viewPreference;
 		this.covidStatus = covid_status;
 	}
+
+	public User(String s) throws JsonMappingException, JsonProcessingException {
+		
+		new ObjectMapper().readValue(s, User.class);
+		
+		
+	}
+	
 }
