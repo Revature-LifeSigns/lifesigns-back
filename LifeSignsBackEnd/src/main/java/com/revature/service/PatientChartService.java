@@ -27,6 +27,7 @@ public class PatientChartService {
 		return pcRepo.findAll();
 	}
     public void insertChart(PatientChart chart) {
+    	
     	pcRepo.save(chart);
     }
 	public void deleteChart(PatientChart chart) {
@@ -56,7 +57,7 @@ public class PatientChartService {
 		if (changes.getDob() != null) {
 			chart.setDob(changes.getDob());
 		}
-		if (changes.getAddress() != null && !changes.getAddress().isEmpty()) {
+		if (changes.getAddress() != null && !changes.getAddress().equals(";,")) {
 			chart.setAddress(changes.getAddress());
 		}
 		if (changes.getInsuranceid() != null && !changes.getInsuranceid().isEmpty()) {

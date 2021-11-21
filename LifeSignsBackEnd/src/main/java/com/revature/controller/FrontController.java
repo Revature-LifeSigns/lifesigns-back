@@ -27,6 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.revature.model.Photo;
 import com.revature.model.User;
 import com.revature.service.PhotoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.model.CovidSurvey;
 import com.revature.model.PatientChart;
 import com.revature.service.CovidSurveyService;
@@ -266,13 +269,14 @@ public class FrontController {
 		public ResponseEntity<String> savePhoto(
 				@RequestParam("file") MultipartFile file, @RequestParam("uploader") String uploader){
 			pServ.savePhoto(file, Integer.parseInt(uploader));
-			return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
+			return ResponseEntity.ok(null);
 	}
 
 	//POST: localhost:***/LifeSigns/chart/insert
 	//Include chart in the request body
 	@PostMapping("/chart/insert")
-	public ResponseEntity<Object> insertChart(@RequestBody PatientChart chart) {
+	public ResponseEntity<Object> insertChart(@RequestBody PatientChart chart) throws JsonMappingException, JsonProcessingException {
+		
 		if (pcServ.getChartByChartId(chart.getChartid()) != null) {
 			return new ResponseEntity<>("Chart with id " + chart.getChartid() + " already exists.", HttpStatus.FORBIDDEN);
 		}
@@ -280,16 +284,16 @@ public class FrontController {
 		return new ResponseEntity<>(chart, HttpStatus.CREATED);
 	}
 	
-	//POST: localhost:***/LifeSigns/chart/update
-	//Deprecated, use patch method instead
-	@PostMapping("/chart/update")
-	public ResponseEntity<Object> updateChart(@RequestBody PatientChart chart) {
-		if (pcServ.getChartByChartId(chart.getChartid()) == null) {
-			return new ResponseEntity<>("Chart with id " + chart.getChartid() + " doesn't exist.", HttpStatus.FORBIDDEN);
-		}
-		pcServ.insertChart(chart);
-		return new ResponseEntity<>(chart, HttpStatus.ACCEPTED);
-	}
+//	//POST: localhost:***/LifeSigns/chart/update
+//	//Deprecated, use patch method instead
+//	@PostMapping("/chart/update")
+//	public ResponseEntity<Object> updateChart(@RequestBody PatientChart chart) {
+//		if (pcServ.getChartByChartId(chart.getChartid()) == null) {
+//			return new ResponseEntity<>("Chart with id " + chart.getChartid() + " doesn't exist.", HttpStatus.FORBIDDEN);
+//		}
+//		pcServ.insertChart(chart);
+//		return new ResponseEntity<>(chart, HttpStatus.ACCEPTED);
+//	}
 	
 
 	@PostMapping("/survey/insert")
@@ -341,7 +345,7 @@ public class FrontController {
 		return new ResponseEntity<>(uServ.getUserByUserId(id), HttpStatus.ACCEPTED);
 	}
 	
-	//PATCH: localhost:***/LifeSigns/user/update
+	//PATCH: localhost:***/LifeSigns/chart/update
 	//Include changes in the request body as a PatientChart object
 	//Chart id and updated fields must be included, other fields can be left blank or null
 	@PatchMapping("chart/update")
