@@ -60,7 +60,9 @@ public class PhotoService {
                 .imagePath(path)
                 .imageFileName(fileName)
                 .build();
+        System.out.println(uploader);
         photo.setUploader(uRepo.findByUserid(uploader));
+        System.out.println(photo.getUploader());
         pRepo.save(photo);
 	}
 
