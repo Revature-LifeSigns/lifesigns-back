@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- NAME AND WHERE IT IS SAVED -->
+	<property name="LOGS" value="./logs" />
+
+	<!-- LOG TO CONSOLE WITH THIS FORMAT -->
+	<appender name="Console"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<!-- BACK UP FILE AND CREATE NEW ONE AFTER CRITERIA -->
+	<appender name="RollingFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS}/spring-boot-logger.log</file>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+		</encoder>
+
+		<!-- GIVE FILENAME FOR NEW LOG FILES CREATED -->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily and when the file reaches 10 MegaBytes -->
+			<fileNamePattern>${LOGS}/archived/spring-boot-logger-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+
+
+	<!-- LOGGING MORE VERBOSE FOR MORE SERVERE LEVELS -->
+	<!-- LOG NOTHING LESS THAN WARN; LOG EVERYTHING MORE THAN WARN -->
+	<appender name="SevereRollingFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS}/severe-logger.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>WARN</level>
+		</filter>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+		</encoder>
+
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily and when the file reaches 10 MegaBytes -->
+			<fileNamePattern>${LOGS}/archived/severe-logger-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<!-- LOG everything at INFO level -->
+	<!-- CHANGED TO TRACE LEVEL -->
+	<!-- THIS WILL SHOW EVERYTHING ON CONSOLE BUT NOT EVERYTHING TO FILE -->
+	<root level="info">
+		<appender-ref ref="Console" />
+	</root>
+
+	<!-- LOG "com.revature.*" at TRACE level -->
+	<!-- LOG FILE ONLY FOR THOSE IN COM.REVATURE -->
+	<logger name="com.revature" level="trace" additivity="false">
+		<appender-ref ref="RollingFile" />
+		<appender-ref ref="Console" />
+		<appender-ref ref="SevereRollingFile" />
+	</logger>
+
+</configuration>
+
+<!-- ERROR - CATCH BLOCK 
+	 WARN - GETTING NO RESULTS FROM SOME FUNCTION 
+	 INFO - EVERYDAY USER EVENTS 
+	 DEBUG - ONLY DURING DEV MODE 
+	 TRACE - FINE GRAIN, ENTRY AND EXIT POINTS -->
