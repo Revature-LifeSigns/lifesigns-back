@@ -37,6 +37,7 @@ public class ChartServiceTests {
 		pcServ = mock(PatientChartService.class);
 		
 		//Building Test PatientChart Java Object
+		PatientChart chart = new PatientChart();
 		chart.setChartid(1);
 		chart.setDoctor(user);
 		chart.setNurse(user);
@@ -55,7 +56,7 @@ public class ChartServiceTests {
 		chartList.add(chart);
 		
 		when(pcServ.getAllCharts()).thenReturn(chartList);
-		when(pcServ.getChartByChartId(1)).thenReturn(chart);
+//		when(pcServ.getChartByChartId(1)).thenReturn(chart);
     }
 	
 	@Test
@@ -65,6 +66,7 @@ public class ChartServiceTests {
 	
 	@Test
 	public void testGetChartByIdSuccess() {
+		when(pcServ.getChartByChartId(1)).thenReturn(chart);
 		assertEquals(pcServ.getChartByChartId(1), chart);
 	}
 	

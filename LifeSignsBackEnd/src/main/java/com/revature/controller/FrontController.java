@@ -134,7 +134,7 @@ public class FrontController {
 	//********************
 	//GET Methods
 	//********************
-    
+   
 	//GET: localhost:***/LifeSigns/user
 	@GetMapping("/user")
 	public ResponseEntity<List<User>> getAllUsers() {
@@ -283,7 +283,7 @@ public class FrontController {
 				@RequestParam("file") MultipartFile file, @RequestParam("uploader") String uploader){
 			log.info("Request to save photo was made.");
 			pServ.savePhoto(file, Integer.parseInt(uploader));
-			return ResponseEntity.ok(null);
+			return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
 	}
 
 	//POST: localhost:***/LifeSigns/chart/insert
