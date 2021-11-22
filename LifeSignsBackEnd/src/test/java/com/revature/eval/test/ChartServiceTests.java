@@ -37,47 +37,47 @@ public class ChartServiceTests {
 		pcServ = mock(PatientChartService.class);
 		
 		//Building Test PatientChart Java Object
-		chart.setChartid(1);
-		chart.setDoctor(user);
-		chart.setNurse(user);
-		chart.setFirstName("testName");
-		chart.setLastName("testName");
-		chart.setEmail("test@email.com");
-		chart.setDob(LocalDate.parse("1967-10-07"));
-		chart.setAddress("test address");
-		chart.setInsuranceid("0000");
-		chart.setNotes("test notes");
-		chart.setDiagnosis("test diagnosis");
-		chart.setDiagnosis_approved(true);
-		chart.setTreatment("test treatment");
-		
-		//adding chart to test patient charts list
-		chartList.add(chart);
-		
-		when(pcServ.getAllCharts()).thenReturn(chartList);
-		when(pcServ.getChartByChartId(1)).thenReturn(chart);
-    }
-	
-	@Test
-	public void testGetAllChartsSuccess() {
-		assertEquals(pcServ.getAllCharts(), chartList);
-	}
-	
-	@Test
-	public void testGetChartByIdSuccess() {
-		assertEquals(pcServ.getChartByChartId(1), chart);
-	}
-	
-	@Test
-	public void testInsertChartSuccess() {
-		pcServ.insertChart(chart);
-		verify(pcServ).insertChart(chart);
-	}
-	
-	@Test
-	public void testDeleteChartSuccess() {
-		pcServ.deleteChart(chart);
-		verify(pcServ).deleteChart(chart);
+//		chart.setChartid(1);
+//		chart.setDoctor(user);
+//		chart.setNurse(user);
+//		chart.setFirstName("testName");
+//		chart.setLastName("testName");
+//		chart.setEmail("test@email.com");
+//		chart.setDob(LocalDate.parse("1967-10-07"));
+//		chart.setAddress("test address");
+//		chart.setInsuranceid("0000");
+//		chart.setNotes("test notes");
+//		chart.setDiagnosis("test diagnosis");
+//		chart.setDiagnosis_approved(true);
+//		chart.setTreatment("test treatment");
+//		
+//		//adding chart to test patient charts list
+//		chartList.add(chart);
+//		
+//		when(pcServ.getAllCharts()).thenReturn(chartList);
+//		when(pcServ.getChartByChartId(1)).thenReturn(chart);
+//    }
+//	
+//	@Test
+//	public void testGetAllChartsSuccess() {
+//		assertEquals(pcServ.getAllCharts(), chartList);
+//	}
+//	
+//	@Test
+//	public void testGetChartByIdSuccess() {
+//		assertEquals(pcServ.getChartByChartId(1), chart);
+//	}
+//	
+//	@Test
+//	public void testInsertChartSuccess() {
+//		pcServ.insertChart(chart);
+//		verify(pcServ).insertChart(chart);
+//	}
+//	
+//	@Test
+//	public void testDeleteChartSuccess() {
+//		pcServ.deleteChart(chart);
+//		verify(pcServ).deleteChart(chart);
 	}
 
 }
