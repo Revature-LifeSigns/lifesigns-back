@@ -24,20 +24,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.revature.model.Photo;
-import com.revature.model.User;
-import com.revature.service.PhotoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.model.CovidSurvey;
 import com.revature.model.PatientChart;
-import com.revature.service.CovidSurveyService;
-
-import com.revature.model.PatientChart;
+import com.revature.model.Photo;
 import com.revature.model.Unit;
 import com.revature.model.UnitAssignment;
 import com.revature.model.User;
+import com.revature.service.CovidSurveyService;
 import com.revature.service.PatientChartService;
 import com.revature.service.PhotoService;
 import com.revature.service.UnitAssignmentService;
@@ -45,9 +40,12 @@ import com.revature.service.UnitService;
 import com.revature.service.UserService;
 import com.revature.util.BcryptPasswordEncoder;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping(value = "/LifeSigns")
 @CrossOrigin(origins = "*")
+@Slf4j
 public class FrontController {
 	private UserService uServ;
 	private PatientChartService pcServ;
@@ -75,6 +73,7 @@ public class FrontController {
     //Include user in JSON format in the request body
     @PostMapping("/login")
     public ResponseEntity < Object > validateUser(@RequestBody LinkedHashMap < String, String > userMap) {
+    	log.info("Login request was made.");
         // Right now, the user should contain the unhashed password stored in the user object.
         // Then the database should have the BCrypt hashed version of the password and we'll check those.
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
@@ -91,6 +90,7 @@ public class FrontController {
     //Include user in JSON format in the request body	
     @PostMapping(value = "/register")
     public ResponseEntity < Object > newUser(@RequestBody LinkedHashMap < String, String > userMap) {
+    	log.info("Register request was made.");
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser != null)
             return new ResponseEntity < > ("Username is taken", HttpStatus.CONFLICT); //409, conflict because already exists
@@ -118,6 +118,7 @@ public class FrontController {
     //Include user in JSON format in the request body, expecting username, currentPassword, and newPassword.
     @PostMapping(value = "/changePassword")
     public ResponseEntity < Object > changePassword(@RequestBody LinkedHashMap < String, String > userMap) {
+    	log.info("Reset password request was made.");
         User returnedUser = uServ.getUserByUsername(userMap.get("username"));
         if (returnedUser == null)
             return new ResponseEntity < > ("Username doesn't exist", HttpStatus.CONFLICT); //409, conflict, how did we get here with invalid username?
@@ -137,12 +138,14 @@ public class FrontController {
 	//GET: localhost:***/LifeSigns/user
 	@GetMapping("/user")
 	public ResponseEntity<List<User>> getAllUsers() {
+		log.info("Request to get all users was made.");
 		return new ResponseEntity<List<User>>(uServ.getAllUsers(), HttpStatus.OK);
 	}
     
 	//GET: localhost:***/LifeSigns/user/id/{id}
 	@GetMapping("/user/id/{id}")
 	public ResponseEntity<User> getUserByUserId(@PathVariable("id") int userid) {
+		log.info("Request to get user by id was made.");
 		User user = uServ.getUserByUserId(userid);
 		if (user == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -153,6 +156,7 @@ public class FrontController {
 	//GET: localhost:***/LifeSigns/user/username/{username}
 	@GetMapping("/user/username/{username}")
 	public ResponseEntity<User> getUserByUsername(@PathVariable("username") String username) {
+		log.info("Request to get user by username was made.");
 		User user = uServ.getUserByUsername(username);
 		if (user == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -162,19 +166,21 @@ public class FrontController {
 	
 	@GetMapping("/photo/{id}")
 	public ResponseEntity<Photo> getProfilePhoto(@PathVariable("id")String id) {
-		
+		log.info("Request to get profile photo was made.");
 		return new ResponseEntity<Photo>(pServ.getProfilePhoto(Integer.parseInt(id)), HttpStatus.OK);
 	}
 	
   //GET: localhost:***/LifeSigns/chart
 	@GetMapping("/chart")
 	public ResponseEntity<List<PatientChart>> getAllCharts() {
+		log.info("Request to get all patient charts was made.");
 		return new ResponseEntity<List<PatientChart>>(pcServ.getAllCharts(), HttpStatus.OK);
 	}
 	
 	//GET: localhost:***/LifeSigns/chart/id/{id}
 	@GetMapping("/chart/id/{id}")
 	public ResponseEntity<PatientChart> getChartByChartId(@PathVariable("id") int chartid) {
+		log.info("Request to get patient chart by chart id was made.");
 		PatientChart chart = pcServ.getChartByChartId(chartid);
 		if (chart == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -184,11 +190,13 @@ public class FrontController {
 	
 	@GetMapping("/survey")
 	public ResponseEntity<List<CovidSurvey>> getAllSurveys() {
+		log.info("Request to get all COVID surveys was made.");
 		return new ResponseEntity<List<CovidSurvey>>(csServ.getAllSurveys(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/survey/id/{id}")
 	public ResponseEntity<CovidSurvey> getSurveyBySurveyId(@PathVariable("id") int surveyId) {
+		log.info("Request to get COVID survey by survey id was made.");
 		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
 		if(survey == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -198,6 +206,7 @@ public class FrontController {
 	
 	@GetMapping("/survey/userid/{userid}")
 	public ResponseEntity<List<CovidSurvey>> getSurveysByUserId(@PathVariable("userid") int userId) {
+		log.info("Request to get COVID surveys by user id was made.");
 		List<CovidSurvey> surveyList = csServ.getSurveysByUserId(userId);
 		if(surveyList == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -208,6 +217,7 @@ public class FrontController {
 	
 	@GetMapping("/admin/units")
 	public ResponseEntity<List<Unit>> getHospitalUnits(){
+		log.info("Request to get hospital units was made.");
 		List<Unit> units = unitServ.getAllUnits();
 		if(units == null)
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -216,6 +226,7 @@ public class FrontController {
 	
 	@GetMapping("/admin/assigned-unit/{id}")
 	public ResponseEntity<Object> getAssignedUnitByUserId(@PathVariable("id") int userId){
+		log.info("Request to get unit assignment by user id was made.");
 		User user = uServ.getUserByUserId(userId);
 		if (user == null) 
 			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
@@ -233,6 +244,7 @@ public class FrontController {
 	//Include user in the request body
 	@PostMapping("/user/insert")
 	public ResponseEntity<Object> insertUser(@RequestBody User user) {
+		log.info("Request to insert a user was made.");
 		if (uServ.getUserByUserId(user.getUserid()) != null) {
 			return new ResponseEntity<>("User with id " + user.getUserid() + " already exists.", HttpStatus.FORBIDDEN);
 		}
@@ -252,6 +264,7 @@ public class FrontController {
 	//Deprecated, use patch method instead
 	@PostMapping("/user/update")
 	public ResponseEntity<Object> updateUser(@RequestBody User user) {
+		log.info("Request to update a user was made.");
 		if (uServ.getUserByUserId(user.getUserid()) == null) {
 			return new ResponseEntity<>("User with id " + user.getUserid() + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
@@ -268,6 +281,7 @@ public class FrontController {
 		)    
 		public ResponseEntity<String> savePhoto(
 				@RequestParam("file") MultipartFile file, @RequestParam("uploader") String uploader){
+			log.info("Request to save photo was made.");
 			pServ.savePhoto(file, Integer.parseInt(uploader));
 			return ResponseEntity.ok(null);
 	}
@@ -276,7 +290,7 @@ public class FrontController {
 	//Include chart in the request body
 	@PostMapping("/chart/insert")
 	public ResponseEntity<Object> insertChart(@RequestBody PatientChart chart) throws JsonMappingException, JsonProcessingException {
-		
+		log.info("Request to insert a chart was made.");
 		if (pcServ.getChartByChartId(chart.getChartid()) != null) {
 			return new ResponseEntity<>("Chart with id " + chart.getChartid() + " already exists.", HttpStatus.FORBIDDEN);
 		}
@@ -298,6 +312,7 @@ public class FrontController {
 
 	@PostMapping("/survey/insert")
 	public ResponseEntity<Object> insertSurvey(@RequestBody CovidSurvey survey) {
+		log.info("Request to get insert a COVID survey was made.");
 		if(csServ.getSurveyBySurveyId(survey.getSurveyId()) != null) {
 			return new ResponseEntity<>("Survey with id " + survey.getSurveyId() + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
@@ -307,6 +322,7 @@ public class FrontController {
 
 	@PostMapping("/admin/assign-units/{id}")
 	public ResponseEntity<Object> insertOrUpdateUnitAssignment(@RequestBody Unit unit, @PathVariable("id") int userId){
+		log.info("Request to insert/update unit assignment was made.");
 		User user = uServ.getUserByUserId(userId);
 		if (user == null) 
 			return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
@@ -337,6 +353,7 @@ public class FrontController {
 	//User id and updated fields must be included, other fields can be left blank or null
 	@PatchMapping("/user/update/{id}")
 	public ResponseEntity<Object> patchUser(@RequestBody User user, @PathVariable int id) {
+		log.info("Request to patch a user was made.");
 		if (uServ.getUserByUserId(id) == null) {
 			return new ResponseEntity<>("User with id " + user.getUserid() + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
@@ -350,6 +367,7 @@ public class FrontController {
 	//Chart id and updated fields must be included, other fields can be left blank or null
 	@PatchMapping("chart/update")
 	public ResponseEntity<Object> patchChart(@RequestBody PatientChart chart) {
+		log.info("Request to patch a patient chart was made.");
 		if (pcServ.getChartByChartId(chart.getChartid()) == null) {
 			return new ResponseEntity<>("Chart with id " + chart.getChartid() + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
@@ -364,6 +382,7 @@ public class FrontController {
 	
 	@DeleteMapping("/user/id/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable("id") int userid) {
+		log.info("Request to delete a user was made.");
 		if (uServ.getUserByUserId(userid) == null) {
 			return new ResponseEntity<>("User with id " + userid + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
@@ -373,6 +392,7 @@ public class FrontController {
 	
 	@DeleteMapping("/chart/id/{id}")
 	public ResponseEntity<String> deleteChart(@PathVariable("id") int chartid) {
+		log.info("Request to delete a patient chart was made.");
 		if (pcServ.getChartByChartId(chartid) == null) {
 			return new ResponseEntity<>("Chart with id " + chartid + " doesn't exist.", HttpStatus.FORBIDDEN);
 		}
@@ -382,6 +402,7 @@ public class FrontController {
 	
 	@DeleteMapping("/survey/id/{id}")
 	public ResponseEntity<String> deleteSurvey(@PathVariable("id") int surveyId) {
+		log.info("Request to delete a COVID survey was made.");
 		CovidSurvey survey = csServ.getSurveyBySurveyId(surveyId);
 		if(survey == null) {
 			return new ResponseEntity<>("Survey with id " + surveyId + " doesn't exist.", HttpStatus.FORBIDDEN);
@@ -396,6 +417,7 @@ public class FrontController {
 	
 	@GetMapping("/units/initialize")
 	public ResponseEntity<List<Unit>> insertInitialUnits(){
+		log.info("Request to insert initial units was made.");
 		List<Unit> unitList = new ArrayList<>(Arrays.asList(new Unit("Main Floor"), new Unit("Trauma"), new Unit("ER"), new Unit("Physical Therapy"), new Unit("ICU"), new Unit("Hospice Care"), new Unit("Surgery"), new Unit("Rehabilitation")));
 		for(Unit unit: unitList) {
 			unitServ.insertUnit(unit);
