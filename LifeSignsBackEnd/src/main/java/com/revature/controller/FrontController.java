@@ -133,7 +133,7 @@ public class FrontController {
 	//********************
 	//GET Methods
 	//********************
-    
+   
 	//GET: localhost:***/LifeSigns/user
 	@GetMapping("/user")
 	public ResponseEntity<List<User>> getAllUsers() {

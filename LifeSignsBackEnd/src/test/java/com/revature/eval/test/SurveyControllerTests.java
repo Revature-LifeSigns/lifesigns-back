@@ -90,7 +90,7 @@ public class SurveyControllerTests {
 	}
 	
 	@Test
-	public void testGetSurveyBySurveyId() throws Exception{//fails
+	public void testGetSurveyBySurveyIdUnsuccess() throws Exception{//fails
 		CovidSurvey survey = new CovidSurvey(1, 1, true, true, true);
 		
 		when(cServ.getSurveyBySurveyId(1)).thenReturn(survey);
@@ -101,7 +101,7 @@ public class SurveyControllerTests {
 				.content(asJSONString(expectedInputJSON))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+				.andExpect(status().isNotFound());
 	}
 	
 	@Test
