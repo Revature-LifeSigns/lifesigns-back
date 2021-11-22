@@ -269,8 +269,8 @@ public class FrontController {
 			produces = MediaType.APPLICATION_JSON_VALUE
 		)    
 		public ResponseEntity<String> savePhoto(
-				@RequestParam("file") MultipartFile file, @RequestParam("uploader") int uploader){
-			pServ.savePhoto(file, uploader);
+				@RequestParam("file") MultipartFile file, @RequestParam("uploader") String uploader){
+			pServ.savePhoto(file, Integer.parseInt(uploader));
 			return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
 	}
 
