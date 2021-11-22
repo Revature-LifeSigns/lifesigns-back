@@ -269,7 +269,7 @@ public class FrontController {
 		public ResponseEntity<String> savePhoto(
 				@RequestParam("file") MultipartFile file, @RequestParam("uploader") String uploader){
 			pServ.savePhoto(file, Integer.parseInt(uploader));
-			return ResponseEntity.ok(null);
+			return new ResponseEntity<String>("Profile Photo was uploaded.", HttpStatus.ACCEPTED);
 	}
 
 	//POST: localhost:***/LifeSigns/chart/insert
