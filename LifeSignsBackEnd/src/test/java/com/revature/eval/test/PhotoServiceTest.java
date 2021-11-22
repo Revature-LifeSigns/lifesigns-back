@@ -1,4 +1,4 @@
-package com.revature.test;
+package com.revature.eval.test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
