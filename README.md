@@ -28,6 +28,7 @@ To-do list:
 ## Usage
 
 This is the backend application, and will need to be used in conjunction with the front end application. (Repo here: https://github.com/Revature-LifeSigns/LifeSignsFront )
+In order to set up this application you will need to set environment variables in your OS to connect to the proper endpoints for your frontend server, RDS, and AWS S3 server. 
 
 ## Contributors
 
